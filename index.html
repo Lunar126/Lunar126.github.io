@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lunar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- TELEGRAM-STYLE BACKGROUND -->
+    <div class="tg-background" id="tgBackground">
+        <div class="tg-blob tg-blob-1"></div>
+        <div class="tg-blob tg-blob-2"></div>
+        <div class="tg-blob tg-blob-3"></div>
+        <div class="tg-blob tg-blob-4"></div>
+        <div class="tg-overlay"></div>
+    </div>
+
+    <div class="notif-container" id="notifContainer"></div>
+
+    <!-- AUTH -->
+    <div class="auth-screen" id="authScreen">
+        <div class="auth-card">
+            <div class="logo-container">
+                <div class="logo-glow"></div>
+                <h1 class="logo"><span class="logo-moon" data-emoji="🌙" data-size="xxl"></span>Lunar</h1>
+            </div>
+            <div class="auth-switcher">
+                <button data-mode="login" class="active">Вход</button>
+                <button data-mode="register">Регистрация</button>
+            </div>
+
+            <div class="auth-step active" id="authLogin">
+                <div class="error-msg" id="loginError"></div>
+                <div class="success-msg" id="loginSuccess"></div>
+                <div class="input-group">
+                    <input type="text" id="loginUsername" placeholder=" " maxlength="20" autocomplete="username">
+                    <label for="loginUsername">Логин</label>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="loginPassword" placeholder=" " maxlength="60" autocomplete="current-password">
+                    <label for="loginPassword">Пароль</label>
+                    <button type="button" class="toggle-pass" data-target="loginPassword">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/></svg>
+                    </button>
+                </div>
+                <label class="remember-label">
+                    <input type="checkbox" id="rememberMe" checked> Запомнить меня
+                </label>
+                <button class="btn-primary" id="loginBtn">
+                    <span>Войти</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <div class="auth-footer-text">Нет аккаунта? Нажмите <b>«Регистрация»</b> выше</div>
+            </div>
+
+            <div class="auth-step" id="authRegister">
+                <div class="error-msg" id="registerError"></div>
+                <div class="input-group">
+                    <input type="text" id="regUsername" placeholder=" " maxlength="20" autocomplete="username">
+                    <label for="regUsername">Придумайте логин</label>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="regPassword" placeholder=" " maxlength="60" autocomplete="new-password">
+                    <label for="regPassword">Пароль</label>
+                    <button type="button" class="toggle-pass" data-target="regPassword">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/></svg>
+                    </button>
+                </div>
+                <div class="password-strength" id="pwdStrength"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+                <div class="password-hint" id="pwdHint"></div>
+                <div class="input-group">
+                    <input type="password" id="regPassword2" placeholder=" " maxlength="60" autocomplete="new-password">
+                    <label for="regPassword2">Повторите пароль</label>
+                </div>
+                <button class="btn-primary" id="registerBtn">
+                    <span>Создать аккаунт</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- APP -->
+    <div class="app" id="app">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="logo-small"><span data-emoji="🌙"></span>Lunar</h1>
+                <div class="user-avatar" id="userAvatar">?</div>
+            </div>
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-tab="chats">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+                    <span>Чаты</span>
+                    <span class="nav-badge" id="chatsBadge" style="display:none;">0</span>
+                </button>
+                <button class="nav-item" data-tab="feed">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                    <span>Лента</span>
+                </button>
+                <button class="nav-item" data-tab="profile">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/><path d="M4 21v-2a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v2" stroke="currentColor" stroke-width="2"/></svg>
+                    <span>Профиль</span>
+                </button>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="online-count"><span class="pulse-dot"></span><span id="onlineCount">0</span>&nbsp;онлайн</div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <!-- CHATS -->
+            <section class="tab-content active" id="tab-chats">
+                <div class="conv-list" id="convList">
+                    <div class="conv-list-header">
+                        <h2>
+                            Чаты
+                            <button class="create-btn" id="createChatBtn" title="Создать канал или группу">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                            </button>
+                        </h2>
+                        <div class="search-box">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                            <input type="text" id="convSearch" placeholder="Поиск чатов...">
+                        </div>
+                        <div class="conv-tabs">
+                            <button class="conv-tab active" data-filter="all">Все</button>
+                            <button class="conv-tab" data-filter="channels">Каналы</button>
+                            <button class="conv-tab" data-filter="groups">Группы</button>
+                            <button class="conv-tab" data-filter="unread">Непрочитанные <span class="count" id="unreadCount" style="display:none;">0</span></button>
+                        </div>
+                    </div>
+                    <div class="conv-items" id="convItems"></div>
+                </div>
+
+                <div class="chat-window" id="chatWindow">
+                    <div class="empty-chat" id="emptyChat">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+                        <h3>Выберите чат</h3>
+                        <p>Или создайте новый канал/группу</p>
+                    </div>
+                    <div id="activeChat" style="display:none; flex-direction:column; height:100%;">
+                        <header class="chat-header">
+                            <div class="chat-header-left">
+                                <button class="icon-btn" id="backBtn" style="display:none;" title="Назад">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                </button>
+                                <div class="chat-header-avatar" id="chatHeaderAvatar">?</div>
+                                <div class="channel-info">
+                                    <h2 id="chatHeaderName">—</h2>
+                                    <p id="chatHeaderStatus">—</p>
+                                </div>
+                            </div>
+                            <div class="chat-header-actions">
+                                <button class="icon-btn" id="themeToggle" title="Сменить тему">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                                </button>
+                                <button class="icon-btn" id="membersBtn" title="Участники">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                </button>
+                                <button class="icon-btn" id="soundToggle" title="Звуки">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M11 5L6 9H2v6h4l5 4V5z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                                </button>
+                                <button class="icon-btn" id="clearChatBtn" title="Очистить историю">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+                                </button>
+                            </div>
+                        </header>
+                        <div class="channel-banner" id="channelBanner" style="display:none;">
+                            <span id="channelBannerText"></span>
+                        </div>
+                        <div class="messages" id="messages"></div>
+                        <div class="reply-bar" id="replyBar">
+                            <div class="reply-bar-content"><b id="replyAuthor">—</b><span id="replyText">—</span></div>
+                            <button id="cancelReply">×</button>
+                        </div>
+                        <form class="message-form" id="messageForm">
+                            <input type="text" id="messageInput" placeholder="Напишите сообщение..." autocomplete="off" maxlength="500">
+                            <button type="submit" class="send-btn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+                            </button>
+                        </form>
+                        <div class="readonly-bar" id="readonlyBar" style="display:none;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2a5 5 0 0 0-5 5v3H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2h-2V7a5 5 0 0 0-5-5z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+                            <span>В этом канале могут писать только создатель и администраторы</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- FEED -->
+            <section class="tab-content" id="tab-feed">
+                <div class="feed-container">
+                    <header class="feed-header">
+                        <h2>Лента</h2>
+                        <button class="btn-primary small" id="newPostBtn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                            Пост
+                        </button>
+                    </header>
+                    <div class="new-post" id="newPost" style="display:none;">
+                        <textarea id="postContent" placeholder="Поделитесь мыслью..." maxlength="300"></textarea>
+                        <div class="new-post-actions">
+                            <button class="btn-ghost" id="cancelPost">Отмена</button>
+                            <button class="btn-primary small" id="publishPost">Опубликовать</button>
+                        </div>
+                    </div>
+                    <div class="posts" id="posts"></div>
+                </div>
+            </section>
+
+            <!-- PROFILE -->
+            <section class="tab-content" id="tab-profile">
+                <div class="profile-container">
+                    <div class="profile-card" id="profileCard">
+                        <div class="profile-banner" id="profileBanner"></div>
+                        <div class="profile-avatar-wrapper">
+                            <div class="profile-avatar-large avatar-frame-none" id="profileAvatar">A</div>
+                            <button class="upload-photo-btn" id="quickUploadPhotoBtn" title="Загрузить фото">
+                                <svg viewBox="0 0 24 24" fill="none"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="13" r="4" stroke="currentColor" stroke-width="2"/></svg>
+                            </button>
+                            <button class="remove-photo-btn" id="quickRemovePhotoBtn" style="display:none;" title="Удалить фото">
+                                <svg viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                            </button>
+                        </div>
+                        <h2 id="profileName">—</h2>
+                        <div class="profile-bio empty" id="profileBio"></div>
+                        <div class="profile-handle" id="profileLogin">@—</div>
+                        <div class="profile-actions">
+                            <button class="edit-profile-btn" id="editProfileBtn">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                Редактировать
+                            </button>
+                            <button class="logout-btn" id="logoutBtn">Выйти</button>
+                        </div>
+                        <div class="profile-stats">
+                            <div class="stat"><span class="stat-value" id="statMessages">0</span><span class="stat-label">Сообщений</span></div>
+                            <div class="stat"><span class="stat-value" id="statChats">0</span><span class="stat-label">Чатов</span></div>
+                            <div class="stat"><span class="stat-value" id="statPosts">0</span><span class="stat-label">Постов</span></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Модалка: создать канал/группу -->
+    <div class="modal-overlay" id="createChatModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Создать</h3>
+                <button class="modal-close" data-close="createChatModal">×</button>
+            </div>
+            <div class="type-switch" id="createTypeSwitch">
+                <button data-type="channel" class="active">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M3 11l18-8-8 18-2-8-8-2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+                    Канал
+                </button>
+                <button data-type="group">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                    Группа
+                </button>
+            </div>
+            <div class="form-field">
+                <label id="createNameLabel">Название канала</label>
+                <input type="text" id="createName" placeholder="Например, Lunar News" maxlength="40">
+            </div>
+            <div class="form-field">
+                <label id="createDescLabel">Описание</label>
+                <input type="text" id="createDesc" placeholder="О чём канал?" maxlength="80">
+            </div>
+            <div class="form-field">
+                <label>Цвет аватара</label>
+                <div class="avatar-choices" id="createAvatarChoices"></div>
+            </div>
+            <div class="info-hint" id="createTypeHint">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M12 16v-4M12 8h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                <span>В канале писать могут только создатель и админы</span>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-ghost" data-close="createChatModal">Отмена</button>
+                <button class="btn-primary" id="confirmCreateBtn">Создать</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модалка: участники -->
+    <div class="modal-overlay" id="membersModal">
+        <div class="modal" style="max-width: 520px;">
+            <div class="modal-header">
+                <h3>Участники</h3>
+                <button class="modal-close" data-close="membersModal">×</button>
+            </div>
+            <div class="members-header-info" id="membersHeaderInfo"></div>
+            <div class="add-member-form" id="addMemberForm" style="display:none;">
+                <input type="text" id="newMemberName" placeholder="Имя участника" maxlength="30">
+                <button class="btn-primary small" id="addMemberBtn">Добавить</button>
+            </div>
+            <div class="members-list" id="membersList"></div>
+            <div class="modal-actions" style="margin-top: 16px;">
+                <button class="btn-ghost" data-close="membersModal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модалка: кастомизация профиля -->
+    <div class="modal-overlay" id="customizeModal">
+        <div class="modal customize-modal">
+            <div class="modal-header">
+                <h3>Настройка профиля</h3>
+                <button class="modal-close" data-close="customizeModal">×</button>
+            </div>
+
+            <div class="preview-box">
+                <div class="preview-banner" id="previewBanner"></div>
+                <div class="preview-avatar" id="previewAvatar">A</div>
+                <div class="preview-name" id="previewName">Никнейм</div>
+                <div class="preview-bio" id="previewBio">Ваше био</div>
+            </div>
+
+            <div class="customize-section">
+                <div class="customize-section-title">Никнейм и био</div>
+                <div class="custom-field">
+                    <label>Отображаемое имя</label>
+                    <input type="text" id="customNickname" maxlength="20" placeholder="Ваш никнейм">
+                    <div class="char-counter"><span id="nicknameCount">0</span>/20</div>
+                </div>
+                <div class="custom-field">
+                    <label>Био (о себе)</label>
+                    <textarea id="customBio" maxlength="80" placeholder="Расскажите о себе..."></textarea>
+                    <div class="char-counter"><span id="bioCount">0</span>/80</div>
+                </div>
+            </div>
+
+            <div class="customize-section">
+                <div class="customize-section-title">Аватар</div>
+                <div class="avatar-type-switch">
+                    <button data-avatar-type="photo">Фото</button>
+                    <button data-avatar-type="emoji">Эмодзи</button>
+                    <button data-avatar-type="color">Градиент</button>
+                </div>
+                <div id="avatarPhotoSection">
+                    <div class="photo-preview-box" id="photoPreviewBox" style="display:none;">
+                        <div class="photo-preview-thumb"><img id="photoPreviewImg" src="" alt=""></div>
+                        <div class="photo-preview-info">
+                            <div class="filename" id="photoFilename">photo.jpg</div>
+                            <div class="filesize" id="photoFilesize">0 KB</div>
+                        </div>
+                        <button class="photo-remove-btn" id="photoRemoveBtn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                        </button>
+                    </div>
+                    <div class="photo-upload-zone" id="photoUploadZone">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <p>Нажмите или перетащите фото</p>
+                        <div class="hint">PNG, JPG, WEBP до 5 МБ</div>
+                        <input type="file" id="photoInput" accept="image/*">
+                    </div>
+                </div>
+                <div id="avatarEmojiSection" style="display:none;">
+                    <div class="emoji-picker" id="emojiPicker"></div>
+                </div>
+                <div id="avatarColorSection" style="display:none;">
+                    <div class="color-grid" id="avatarColorGrid"></div>
+                </div>
+            </div>
+
+            <div class="customize-section">
+                <div class="customize-section-title">Баннер профиля</div>
+                <div class="banner-grid" id="bannerGrid"></div>
+            </div>
+
+            <div class="customize-section">
+                <div class="customize-section-title">Рамка аватара</div>
+                <div class="frame-grid" id="frameGrid"></div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-ghost" data-close="customizeModal">Отмена</button>
+                <button class="btn-primary" id="saveCustomizationBtn">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
