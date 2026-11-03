@@ -6,10 +6,33 @@
     --success: #34d399; --danger: #f87171; --emerald: #10b981; --warning: #fbbf24;
     --panel-bg: rgba(17,24,39,0.65); --panel-bg-soft: rgba(17,24,39,0.35); --panel-bg-header: rgba(17,24,39,0.45);
 }
-body.theme-light { --bg-primary: #f1f5f9; --bg-secondary: #ffffff; --bg-tertiary: #e2e8f0; --bg-elevated: #f8fafc; --border: #cbd5e1; --border-light: #e2e8f0; --text-primary: #0f172a; --text-secondary: #475569; --text-muted: #94a3b8; --accent: #0284c7; --accent-glow: rgba(2,132,199,0.3); --panel-bg: rgba(255,255,255,0.7); --panel-bg-soft: rgba(255,255,255,0.4); --panel-bg-header: rgba(255,255,255,0.5); }
-body.theme-amoled { --bg-primary: #000000; --bg-secondary: #0a0a0a; --bg-tertiary: #111111; --bg-elevated: #1a1a1a; --border: #1f1f1f; --panel-bg: rgba(0,0,0,0.85); --panel-bg-soft: rgba(0,0,0,0.6); --panel-bg-header: rgba(0,0,0,0.7); }
-body.theme-terminal { --bg-primary: #000800; --bg-secondary: #001100; --bg-tertiary: #002200; --border: #003300; --text-primary: #00ff88; --text-secondary: #00cc66; --text-muted: #006633; --accent: #00ff88; --accent-glow: rgba(0,255,136,0.4); --panel-bg: rgba(0,20,0,0.85); }
-body.theme-paper { --bg-primary: #faf8f3; --bg-secondary: #ffffff; --bg-tertiary: #f0ede5; --border: #e0dcd2; --text-primary: #2a2820; --text-secondary: #6b6860; --text-muted: #a8a49c; --accent: #d97706; --accent-glow: rgba(217,119,6,0.3); --panel-bg: rgba(250,248,243,0.8); }
+body.theme-light { 
+    --bg-primary: #f1f5f9; --bg-secondary: #ffffff; --bg-tertiary: #e2e8f0; --bg-elevated: #f8fafc; 
+    --border: #cbd5e1; --border-light: #e2e8f0; 
+    --text-primary: #0f172a; --text-secondary: #475569; --text-muted: #94a3b8; 
+    --accent: #0284c7; --accent-glow: rgba(2,132,199,0.3); 
+    --panel-bg: rgba(255,255,255,0.7); --panel-bg-soft: rgba(255,255,255,0.4); --panel-bg-header: rgba(255,255,255,0.5); 
+}
+body.theme-amoled { 
+    --bg-primary: #000000; --bg-secondary: #0a0a0a; --bg-tertiary: #111111; --bg-elevated: #1a1a1a; 
+    --border: #1f1f1f; 
+    --panel-bg: rgba(0,0,0,0.85); --panel-bg-soft: rgba(0,0,0,0.6); --panel-bg-header: rgba(0,0,0,0.7); 
+}
+body.theme-terminal { 
+    --bg-primary: #000800; --bg-secondary: #001100; --bg-tertiary: #002200; 
+    --border: #003300; 
+    --text-primary: #00ff88; --text-secondary: #00cc66; --text-muted: #006633; 
+    --accent: #00ff88; --accent-glow: rgba(0,255,136,0.4); 
+    --panel-bg: rgba(0,20,0,0.85); 
+}
+body.theme-paper { 
+    --bg-primary: #faf8f3; --bg-secondary: #ffffff; --bg-tertiary: #f0ede5; 
+    --border: #e0dcd2; 
+    --text-primary: #2a2820; --text-secondary: #6b6860; --text-muted: #a8a49c; 
+    --accent: #d97706; --accent-glow: rgba(217,119,6,0.3); 
+    --panel-bg: rgba(250,248,243,0.8); 
+}
+
 * { margin:0; padding:0; box-sizing:border-box; }
 html, body { height:100%; overflow:hidden; }
 body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(--text-primary); position:relative; transition:background .3s,color .3s; }
@@ -356,8 +379,27 @@ img.emoji.xxl { width:3em; height:3em; vertical-align:-0.5em; }
 .stat-label { font-size:12px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.5px; }
 .profile-actions { display:flex; gap:8px; justify-content:center; margin-bottom:20px; flex-wrap:wrap; padding:0 16px; }
 .profile-settings-row { display:flex; gap:6px; justify-content:center; margin-bottom:20px; flex-wrap:wrap; padding:0 16px; }
-.setting-btn { padding:8px 12px; background:var(--bg-tertiary); border:1px solid var(--border); border-radius:8px; color:var(--text-secondary); font-family:inherit; font-size:12px; font-weight:500; cursor:pointer; transition:all .2s; }
-.setting-btn:hover { color:var(--accent); border-color:var(--accent); }
+
+/* ИСПРАВЛЕННЫЙ БЛОК */
+.setting-btn {
+    padding: 8px 12px;
+    background: var(--bg-tertiary); /* Заменили белый на цвет темы */
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-secondary);
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all .2s;
+}
+.setting-btn:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: var(--bg-elevated); /* Чуть светлее при наведении */
+}
+/* КОНЕЦ ИСПРАВЛЕННОГО БЛОКА */
+
 .edit-profile-btn { padding:10px 20px; background:linear-gradient(135deg,var(--accent),var(--blue)); border:none; border-radius:10px; color:#fff; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; transition:all .25s; display:flex; align-items:center; gap:6px; }
 .edit-profile-btn:hover { transform:translateY(-2px); box-shadow:0 8px 20px var(--accent-glow); }
 .logout-btn { padding:10px 20px; background:rgba(248,113,113,.1); border:1px solid rgba(248,113,113,.3); border-radius:10px; color:var(--danger); font-family:inherit; font-size:13px; font-weight:500; cursor:pointer; }
