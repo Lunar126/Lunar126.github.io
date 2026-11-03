@@ -212,6 +212,9 @@ const giftCatalog = [
     { id: '5170521118301225164', name: 'Самоцвет', collection: 'Telegram', rarity: 'legend', price: 750, img: 'https://api.changes.tg/original/5170521118301225164.png?size=512' },
     
     // Разновидности Plush Pepe
+    // ВНИМАНИЕ: Сейчас стоят заглушки. Чтобы картинки стали разными, замени URL в поле img на:
+    // https://api.changes.tg/model/plushpepe/ТОЧНЫЙ_ID_МОДЕЛИ.png?size=512
+    // ID моделей можно попробовать найти на tongifts.wiki (в URL страницы модели) или через API.
     { id: 'nft_plush_pepe_emerald', name: 'Emerald Plush', collection: 'Plush Pepe', rarity: 'legend', price: 6000, img: 'https://api.changes.tg/original/plush_pepe.png?size=512' },
     { id: 'nft_plush_pepe_cold', name: 'Cold Heart', collection: 'Plush Pepe', rarity: 'epic', price: 5000, img: 'https://api.changes.tg/original/plush_pepe.png?size=512' },
     { id: 'nft_plush_pepe_hue', name: 'Hue Jester', collection: 'Plush Pepe', rarity: 'epic', price: 4500, img: 'https://api.changes.tg/original/plush_pepe.png?size=512' },
