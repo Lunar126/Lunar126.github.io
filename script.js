@@ -79,7 +79,9 @@ class SoundEngine {
             notif: this.notifSound === 'chime' ? [{f:523, d:.15, t:'sine', v:.2},{f:659, d:.15, t:'sine', v:.2, delay:.1},{f:784, d:.3, t:'sine', v:.25, delay:.2}] : this.notifSound === 'bell' ? [{f:880, f2:1760, d:.4, t:'sine', v:.25}] : [{f:1046, f2:1568, d:.3, t:'sine', v:.25}],
             success: [{f:523, d:.12, t:'sine', v:.2},{f:659, d:.12, t:'sine', v:.2, delay:.12},{f:784, d:.12, t:'sine', v:.2, delay:.24},{f:1046, d:.4, t:'sine', v:.25, delay:.36}],
             photo: [{f:784, d:.1, t:'sine', v:.15},{f:1046, d:.15, t:'sine', v:.2, delay:.1}],
-            voice: [{f:440, d:.15, t:'sine', v:.2},{f:660, d:.15, t:'sine', v:.2, delay:.1}]
+            voice: [{f:440, d:.15, t:'sine', v:.2},{f:660, d:.15, t:'sine', v:.2, delay:.1}],
+            gift: [{f:523, f2:784, d:.15, t:'sine', v:.2},{f:784, f2:1046, d:.2, t:'sine', v:.2, delay:.12},{f:1046, f2:1568, d:.25, t:'sine', v:.25, delay:.24}],
+            legend: [{f:523, f2:659, d:.2, t:'sine', v:.25},{f:659, f2:784, d:.2, t:'sine', v:.25, delay:.15},{f:784, f2:1046, d:.2, t:'sine', v:.3, delay:.3},{f:1046, f2:1318, d:.4, t:'sine', v:.3, delay:.45}]
         };
         const list = tones[type] || tones.click;
         list.forEach((tone, i) => {
@@ -123,6 +125,23 @@ const smartReplyPool = {
     default: ['👍','Ок','Спасибо','Понял','Хорошо']
 };
 
+/* ============ ПОДАРКИ ИЗ TELEGRAM ============ */
+// Оригинальные ID и прямые ссылки на высококачественные PNG
+const giftCatalog = [
+    { id: '5170145012310081615', name: 'Сердечко', collection: 'Telegram', rarity: 'common', price: 15, img: 'https://api.changes.tg/original/5170145012310081615.png?size=512' },
+    { id: '5170233102089322756', name: 'Мишка', collection: 'Telegram', rarity: 'common', price: 20, img: 'https://api.changes.tg/original/5170233102089322756.png?size=512' },
+    { id: '5170250947678437525', name: 'Подарок', collection: 'Telegram', rarity: 'common', price: 25, img: 'https://api.changes.tg/original/5170250947678437525.png?size=512' },
+    { id: '5168103777563050263', name: 'Роза', collection: 'Telegram', rarity: 'rare', price: 50, img: 'https://api.changes.tg/original/5168103777563050263.png?size=512' },
+    { id: '5170144170496491616', name: 'Торт', collection: 'Telegram', rarity: 'rare', price: 65, img: 'https://api.changes.tg/original/5170144170496491616.png?size=512' },
+    { id: '5170314324215857265', name: 'Букет', collection: 'Telegram', rarity: 'rare', price: 80, img: 'https://api.changes.tg/original/5170314324215857265.png?size=512' },
+    { id: '5170564780938756245', name: 'Ракета', collection: 'Telegram', rarity: 'epic', price: 150, img: 'https://api.changes.tg/original/5170564780938756245.png?size=512' },
+    { id: '6028601630662853006', name: 'Шампанское', collection: 'Telegram', rarity: 'epic', price: 180, img: 'https://api.changes.tg/original/6028601630662853006.png?size=512' },
+    { id: '5168043875654172773', name: 'Кубок', collection: 'Telegram', rarity: 'epic', price: 200, img: 'https://api.changes.tg/original/5168043875654172773.png?size=512' },
+    { id: '5170690322832818290', name: 'Кольцо', collection: 'Telegram', rarity: 'legend', price: 500, img: 'https://api.changes.tg/original/5170690322832818290.png?size=512' },
+    { id: '5170521118301225164', name: 'Самоцвет', collection: 'Telegram', rarity: 'legend', price: 750, img: 'https://api.changes.tg/original/5170521118301225164.png?size=512' }
+];
+const rarityLabel = { common: 'Обычный', rare: 'Редкий', epic: 'Эпический', legend: 'Легендарный' };
+
 /* ============ STATE ============ */
 const state = {
     user: null, login: null, activeConv: null, convs: [],
@@ -145,6 +164,8 @@ const state = {
     recording: null,
     recordStart: 0, recordTimer: null,
     voiceBlob: null,
+    balance: 500, ownedGifts: [], giftTab: 'catalog', userProfileGifts: [],
+    pendingGift: null, giftRecipientConv: null,
     profile: { nickname: '', bio: '', avatarType: 'emoji', avatarEmoji: '😎', avatarColor: 0, avatarPhoto: null, avatarPhotoName: '', avatarPhotoSize: 0, banner: 'default', frame: 'none' },
     tempProfile: null
 };
@@ -347,6 +368,7 @@ function updateProfileUI() {
     document.getElementById('statMessages').textContent = state.totalMessages;
     document.getElementById('statChats').textContent = state.convs.length;
     document.getElementById('statPosts').textContent = state.totalPosts;
+    document.getElementById('balanceAmount').textContent = state.balance;
     const rBtn = document.getElementById('quickRemovePhotoBtn');
     if (rBtn) rBtn.style.display = (p.avatarType === 'photo' && p.avatarPhoto) ? 'flex' : 'none';
 }
@@ -357,6 +379,8 @@ function enterApp() {
     document.getElementById('app').classList.add('visible');
     renderConvList();
     applyEmojiToStatic();
+    renderGifts();
+    renderProfileGifts();
     document.getElementById('onlineCount').textContent = Math.max(1, state.convs.filter(c => c.type === 'group').length + 1);
     saveToStorage();
     if (state.pin) lockApp();
@@ -390,6 +414,9 @@ function saveToStorage() {
         localStorage.setItem('lunar_stats', JSON.stringify({ totalMessages: state.totalMessages, totalPosts: state.totalPosts }));
         localStorage.setItem('lunar_drafts', JSON.stringify(state.drafts));
         localStorage.setItem('lunar_wallpapers', JSON.stringify(state.chatWallpapers));
+        localStorage.setItem('lunar_balance', JSON.stringify(state.balance));
+        localStorage.setItem('lunar_owned_gifts', JSON.stringify(state.ownedGifts));
+        localStorage.setItem('lunar_profile_gifts', JSON.stringify(state.userProfileGifts));
         if (state.pin !== null) localStorage.setItem('lunar_pin', JSON.stringify({ pin: state.pin, autolock: state.pinAutolock }));
         if (state.login) {
             const users = getUsers();
@@ -412,6 +439,12 @@ function loadFromStorage() {
         if (drafts) state.drafts = JSON.parse(drafts);
         const wp = localStorage.getItem('lunar_wallpapers');
         if (wp) state.chatWallpapers = JSON.parse(wp);
+        const balance = localStorage.getItem('lunar_balance');
+        if (balance !== null) state.balance = JSON.parse(balance);
+        const owned = localStorage.getItem('lunar_owned_gifts');
+        if (owned) state.ownedGifts = JSON.parse(owned);
+        const pg = localStorage.getItem('lunar_profile_gifts');
+        if (pg) state.userProfileGifts = JSON.parse(pg);
         const pin = localStorage.getItem('lunar_pin');
         if (pin) { const p = JSON.parse(pin); state.pin = p.pin; state.pinAutolock = p.autolock || 0; }
     } catch(e) {}
@@ -527,7 +560,6 @@ function openConv(id) {
     sound.play('click');
     const conv = state.convs.find(c => c.id === id);
     if (!conv) return;
-    // save draft before switching
     const curInput = document.getElementById('messageInput');
     if (state.activeConv && curInput.value.trim()) state.drafts[state.activeConv] = curInput.value;
     state.activeConv = id;
@@ -544,16 +576,12 @@ function openConv(id) {
     document.getElementById('chatHeaderName').innerHTML = escapeHtml(conv.name) + ' ' + tag + (conv.archived ? ' 📦' : '');
     const mc = conv.members ? conv.members.length : 1;
     document.getElementById('chatHeaderStatus').textContent = conv.description || (conv.type === 'channel' ? mc + ' подписчиков' : mc + ' участников');
-    // banner
     const ban = document.getElementById('channelBanner'), bant = document.getElementById('channelBannerText');
     if (conv.type === 'channel') { ban.style.display = 'flex'; bant.textContent = canWrite(conv) ? 'Вы можете писать (создатель/админ)' : 'Только создатель и админы могут писать'; }
     else ban.style.display = 'none';
-    // wallpaper
     applyChatWallpaper(id);
-    // form
     const form = document.getElementById('messageForm'), ro = document.getElementById('readonlyBar');
     if (canWrite(conv)) { form.style.display = 'flex'; ro.style.display = 'none'; } else { form.style.display = 'none'; ro.style.display = 'flex'; }
-    // draft
     curInput.value = state.drafts[id] || '';
     document.getElementById('convList').classList.add('mobile-hide');
     document.getElementById('chatWindow').classList.add('mobile-open');
@@ -609,7 +637,19 @@ function renderMessages() {
         const fwdHtml = m.forwardedFrom ? `<span class="forward-tag">↪ Переслано от ${escapeHtml(m.forwardedFrom)}</span>` : '';
         const editedHtml = m.edited ? '<span class="edited-tag">(изменено)</span>' : '';
         let bubbleContent = '';
-        if (m.voice) bubbleContent = `<audio class="voice-msg" controls src="${m.voice}"></audio>`;
+        if (m.gift) {
+            bubbleContent = `<div class="gift-card${own ? ' own' : ''}${m.gift.rarity === 'legend' ? ' rarity-legend' : ''}" style="background:transparent;border:none;padding:0;width:200px;">
+                <div class="gift-sparkle" style="top: 10%; left: 15%;"></div>
+                <div class="gift-sparkle" style="top: 70%; right: 20%; animation-delay: .7s;"></div>
+                <img src="${m.gift.img}" alt="${m.gift.name}" style="width:80px;height:80px;object-fit:contain;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.4));">
+                <div class="gift-name" style="font-size:14px;font-weight:600;text-align:center;margin-top:8px;">${escapeHtml(m.gift.name)}</div>
+                <div class="gift-collection" style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;">${escapeHtml(m.gift.collection)}</div>
+                <div class="gift-rarity rarity-${m.gift.rarity}" style="font-size:10px;font-weight:700;padding:2px 10px;border-radius:10px;text-transform:uppercase;letter-spacing:.5px;">${rarityLabel[m.gift.rarity]}</div>
+                <div class="gift-num" style="font-size:11px;color:var(--text-muted);font-family:'Space Grotesk',monospace;background:rgba(0,0,0,.3);padding:2px 8px;border-radius:6px;margin-top:4px;">#${m.gift.number}</div>
+                ${m.text ? `<div style="font-size:12px;color:var(--text-secondary);text-align:center;margin-top:6px;padding-top:6px;border-top:1px solid var(--border);width:100%;">${escapeHtml(m.text)}</div>` : ''}
+            </div>`;
+        }
+        else if (m.voice) bubbleContent = `<audio class="voice-msg" controls src="${m.voice}"></audio>`;
         else if (m.file) {
             if (m.file.type && m.file.type.startsWith('image/')) bubbleContent = `<a href="${m.file.data}" target="_blank"><img class="attachment-img" src="${m.file.data}" alt=""></a>`;
             else bubbleContent = `<a class="file-attachment" href="${m.file.data}" download="${escapeHtml(m.file.name)}">📎 ${escapeHtml(m.file.name)}</a>`;
@@ -714,7 +754,6 @@ function sendMessage() {
     if (!text || !state.activeConv) return;
     const conv = state.convs.find(c => c.id === state.activeConv);
     if (!canWrite(conv)) { sound.play('error'); return; }
-    // edit mode
     if (state.editingMsg) {
         state.editingMsg.text = text;
         state.editingMsg.edited = true;
@@ -743,16 +782,10 @@ function sendMessage() {
     document.getElementById('smartReplies').style.display = 'none';
     sound.play('send');
     renderMessages(); renderConvList(); saveToStorage();
-    // simulate bot reply (demo)
-    simulateReply(conv, msg);
 }
 function extractMentions(text) {
     const m = text.match(/@([a-zA-Z0-9_]+)/g);
     return m ? m.map(x => x.slice(1).toLowerCase()) : [];
-}
-function simulateReply(conv, msg) {
-    if (!conv || conv.type !== 'dm' && !conv.members) return;
-    // demo: not realtime
 }
 
 /* ============ SWIPE ============ */
@@ -832,6 +865,7 @@ document.querySelectorAll('.nav-item').forEach(item => {
         if (tab === 'chats') { document.getElementById('convList').classList.remove('mobile-hide'); document.getElementById('chatWindow').classList.remove('mobile-open'); }
         if (tab === 'profile') updateProfileUI();
         if (tab === 'friends') renderFriends();
+        if (tab === 'gifts') renderGifts();
     });
 });
 document.getElementById('backBtn').addEventListener('click', closeChatMobile);
@@ -1709,6 +1743,125 @@ document.getElementById('sendCommentBtn').addEventListener('click', () => {
     openComments(state.activeCommentPost);
     renderPosts(); sound.play('send');
 });
+
+/* ============ ПОДАРКИ (LOGIC) ============ */
+function renderGifts() {
+    const grid = document.getElementById('giftsGrid');
+    document.getElementById('balanceAmount').textContent = state.balance;
+    document.getElementById('ownedCount').textContent = state.ownedGifts.length;
+    if (state.giftTab === 'owned') {
+        if (!state.ownedGifts.length) {
+            grid.innerHTML = `<div class="gifts-empty" style="grid-column: 1/-1;"><div style="font-size:40px;">🎁</div><div style="font-size: 16px; font-weight: 600; color: var(--text-secondary);">Подарков пока нет</div></div>`;
+            return;
+        }
+        grid.innerHTML = state.ownedGifts.map(g => `
+            <div class="gift-item rarity-${g.rarity}" style="cursor: default;">
+                <img src="${g.img}" alt="${g.name}" style="width:64px;height:64px;object-fit:contain;">
+                <div class="g-name">${escapeHtml(g.name)}</div>
+                <div class="g-collection">${escapeHtml(g.collection)}</div>
+                <div class="g-rarity rarity-${g.rarity}">${rarityLabel[g.rarity]}</div>
+                <div class="g-price">${emojiImg('💎', 'small')} ${g.price}</div>
+                <div class="g-owned" style="background: var(--emerald);">#${g.number}</div>
+            </div>`).join('');
+        return;
+    }
+    grid.innerHTML = giftCatalog.map(g => `
+        <div class="gift-item rarity-${g.rarity}" data-gift-id="${g.id}">
+            <img src="${g.img}" alt="${g.name}" style="width:64px;height:64px;object-fit:contain;margin-bottom:8px;">
+            <div class="g-name">${escapeHtml(g.name)}</div>
+            <div class="g-collection">${escapeHtml(g.collection)}</div>
+            <div class="g-rarity rarity-${g.rarity}">${rarityLabel[g.rarity]}</div>
+            <div class="g-price">${emojiImg('💎', 'small')} ${g.price}</div>
+        </div>`).join('');
+    grid.querySelectorAll('.gift-item').forEach(el => {
+        el.addEventListener('click', () => {
+            const gift = giftCatalog.find(g => g.id === el.dataset.giftId);
+            if (gift) openSendGiftModal(gift);
+        });
+    });
+}
+document.querySelectorAll('.gifts-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        sound.play('click');
+        document.querySelectorAll('.gifts-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        state.giftTab = tab.dataset.giftTab;
+        renderGifts();
+    });
+});
+document.getElementById('topupBtn').addEventListener('click', () => { sound.play('click'); openModal('topupModal'); });
+document.querySelectorAll('.topup-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const amount = parseInt(btn.dataset.amount);
+        state.balance += amount;
+        saveToStorage();
+        document.getElementById('balanceAmount').textContent = state.balance;
+        document.getElementById('modalBalance').textContent = state.balance + ' 💎';
+        sound.play('success');
+        showNotif('Изумруды пополнены', `+${amount} 💎`);
+        closeModal('topupModal');
+    });
+});
+function openSendGiftModal(gift) {
+    if (state.balance < gift.price) {
+        sound.play('error'); showNotif('Недостаточно изумрудов', `Нужно ещё ${gift.price - state.balance} 💎`); return;
+    }
+    state.pendingGift = gift;
+    const recipientConv = state.convs.find(c => c.id === state.activeConv);
+    state.giftRecipientConv = recipientConv;
+    const preview = document.getElementById('giftPreview');
+    preview.innerHTML = `<img src="${gift.img}" alt="${gift.name}" style="width:100px;height:100px;object-fit:contain;"><div class="gp-name">${escapeHtml(gift.name)}</div><div class="gp-collection">${escapeHtml(gift.collection)}</div><div class="gp-rarity rarity-${gift.rarity}">${rarityLabel[gift.rarity]}</div><div class="gp-price">${emojiImg('💎')} ${gift.price}</div>`;
+    document.getElementById('giftRecipient').value = recipientConv ? recipientConv.name : 'Выберите чат';
+    document.getElementById('giftMessage').value = '';
+    document.getElementById('modalBalance').textContent = state.balance + ' 💎';
+    openModal('sendGiftModal');
+}
+document.getElementById('sendGiftFromChatBtn').addEventListener('click', () => {
+    if (!state.activeConv) { sound.play('error'); showNotif('Ошибка', 'Сначала откройте чат'); return; }
+    sound.play('click');
+    document.querySelector('.nav-item[data-tab="gifts"]').click();
+    setTimeout(() => { showNotif('Выберите подарок', 'Нажмите на подарок'); }, 300);
+});
+document.getElementById('confirmSendGiftBtn').addEventListener('click', () => {
+    const gift = state.pendingGift, conv = state.giftRecipientConv;
+    if (!gift) return;
+    if (!conv) { sound.play('error'); showNotif('Ошибка', 'Откройте чат'); return; }
+    if (state.balance < gift.price) { sound.play('error'); showNotif('Недостаточно изумрудов', 'Пополните баланс'); return; }
+    state.balance -= gift.price;
+    const giftNumber = Math.floor(Math.random() * 9000) + 1000;
+    const giftMessage = document.getElementById('giftMessage').value.trim();
+    const giftData = { id: gift.id, name: gift.name, img: gift.img, collection: gift.collection, rarity: gift.rarity, price: gift.price, number: giftNumber };
+    const msg = { id: Date.now() + Math.random(), author: state.profile.nickname, text: giftMessage, time: Date.now(), own: true, reactions: [], gift: giftData };
+    conv.messages.push(msg);
+    state.ownedGifts.push({ ...giftData, receivedAt: Date.now(), from: conv.name });
+    state.userProfileGifts.push({ ...giftData, from: conv.name, receivedAt: Date.now() });
+    saveToStorage();
+    document.getElementById('balanceAmount').textContent = state.balance;
+    document.getElementById('statGifts').textContent = state.userProfileGifts.length;
+    if (gift.rarity === 'legend') { sound.play('legend'); showNotif('🎉 Легендарный подарок!', `${gift.name} → ${conv.name}`, '', true); }
+    else { sound.play('gift'); showNotif('Подарок отправлен', `${gift.name} → ${conv.name}`, '', true); }
+    closeModal('sendGiftModal');
+    state.pendingGift = null; state.giftRecipientConv = null;
+    if (state.activeConv === conv.id) renderMessages();
+    renderConvList(); renderGifts(); renderProfileGifts();
+    setTimeout(() => { document.querySelector('.nav-item[data-tab="chats"]').click(); setTimeout(() => openConv(conv.id), 150); }, 600);
+});
+function renderProfileGifts() {
+    const container = document.getElementById('profileGifts');
+    if (!container) return;
+    document.getElementById('statGifts').textContent = state.userProfileGifts.length;
+    document.getElementById('profileBalance').textContent = state.balance;
+    if (!state.userProfileGifts.length) {
+        container.innerHTML = '<div style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 20px; grid-column: 1/-1;">Пока нет подарков</div>';
+        return;
+    }
+    container.innerHTML = state.userProfileGifts.slice(-12).map(g => `
+        <div style="background: linear-gradient(160deg, #1a2235, #0f172a); border: 1px solid var(--border); border-radius: 12px; padding: 10px 6px; text-align: center; ${g.rarity === 'legend' ? 'border-color: #fbbf24;' : ''}">
+            <img src="${g.img}" alt="${g.name}" style="width:40px;height:40px;object-fit:contain;margin-bottom:4px;">
+            <div style="font-size: 11px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(g.name)}</div>
+            <div style="font-size: 9px; color: var(--text-muted); font-family: monospace;">#${g.number}</div>
+        </div>`).join('');
+}
 
 /* ============ MULTI ACCOUNTS ============ */
 function renderSavedAccounts() {
