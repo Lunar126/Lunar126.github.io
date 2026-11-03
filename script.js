@@ -211,8 +211,9 @@ const giftCatalog = [
     { id: '5170690322832818290', name: 'Кольцо', collection: 'Telegram', rarity: 'legend', price: 500, img: 'https://api.changes.tg/original/5170690322832818290.png?size=512' },
     { id: '5170521118301225164', name: 'Самоцвет', collection: 'Telegram', rarity: 'legend', price: 750, img: 'https://api.changes.tg/original/5170521118301225164.png?size=512' },
     
+    // Исправлена ссылка для Durov's Cap
     { id: 'nft_plush_pepe', name: 'Plush Pepe', collection: 'Plush Pepe', rarity: 'legend', price: 7000, img: 'https://api.changes.tg/original/plush_pepe.png?size=512' },
-    { id: 'nft_durov_cap', name: "Durov's Cap", collection: "Durov's Cap", rarity: 'legend', price: 470, img: 'https://api.changes.tg/original/durov_cap.png?size=512' },
+    { id: 'nft_durov_cap', name: "Durov's Cap", collection: "Durov's Cap", rarity: 'legend', price: 470, img: 'https://fragment.com/api/v1/nft/durovs-cap/1.png' },
     { id: 'nft_heart_locket', name: 'Heart Locket', collection: 'Heart Locket', rarity: 'epic', price: 1444, img: 'https://api.changes.tg/original/heart_locket.png?size=512' },
     { id: 'nft_scared_cat', name: 'Scared Cat', collection: 'Scared Cat', rarity: 'epic', price: 299, img: 'https://api.changes.tg/original/scared_cat.png?size=512' },
     { id: 'nft_precious_peach', name: 'Precious Peach', collection: 'Precious Peach', rarity: 'rare', price: 290, img: 'https://api.changes.tg/original/precious_peach.png?size=512' },
@@ -773,7 +774,7 @@ function renderMessages() {
         let bubbleContent = '';
         if (m.gift) {
             bubbleContent = `<div style="background:transparent;border:none;padding:0;width:200px;">
-                <img src="${m.gift.img}" alt="${m.gift.name}" style="width:80px;height:80px;object-fit:contain;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.4));">
+                <img src="${m.gift.img}" alt="${m.gift.name}" style="width:80px;height:80px;object-fit:contain;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.4));" onerror="this.src='https://cdn.jsdelivr.net/npm/emoji-datasource-apple@15.0.1/img/apple/64/1f381.png'">
                 <div style="font-size:14px;font-weight:600;text-align:center;margin-top:8px;">${escapeHtml(m.gift.name)}</div>
                 <div style="font-size:10px;font-weight:700;padding:2px 10px;border-radius:10px;text-transform:uppercase;background:rgba(100,116,139,.2);color:#94a3b8;">${m.gift.rarity}</div>
                 ${m.text ? `<div style="font-size:12px;color:var(--text-secondary);text-align:center;margin-top:6px;padding-top:6px;border-top:1px solid var(--border);">${escapeHtml(m.text)}</div>` : ''}
@@ -2050,7 +2051,7 @@ function renderGifts() {
         }
         grid.innerHTML = state.ownedGifts.map(g => `
             <div class="gift-item rarity-${g.rarity}" style="cursor: default;">
-                <img src="${g.img}" alt="${g.name}" style="width:64px;height:64px;object-fit:contain;">
+                <img src="${g.img}" alt="${g.name}" style="width:64px;height:64px;object-fit:contain;" onerror="this.src='https://cdn.jsdelivr.net/npm/emoji-datasource-apple@15.0.1/img/apple/64/1f381.png'">
                 <div class="g-name">${escapeHtml(g.name)}</div>
                 <div class="g-rarity rarity-${g.rarity}">${rarityLabel[g.rarity]}</div>
                 <div class="g-price">💎 ${g.price}</div>
@@ -2060,7 +2061,7 @@ function renderGifts() {
     }
     grid.innerHTML = giftCatalog.map(g => `
         <div class="gift-item rarity-${g.rarity}" data-gift-id="${g.id}">
-            <img src="${g.img}" alt="${g.name}" style="width:64px;height:64px;object-fit:contain;margin-bottom:8px;">
+            <img src="${g.img}" alt="${g.name}" style="width:64px;height:64px;object-fit:contain;margin-bottom:8px;" onerror="this.src='https://cdn.jsdelivr.net/npm/emoji-datasource-apple@15.0.1/img/apple/64/1f381.png'">
             <div class="g-name">${escapeHtml(g.name)}</div>
             <div class="g-rarity rarity-${g.rarity}">${rarityLabel[g.rarity]}</div>
             <div class="g-price">💎 ${g.price}</div>
@@ -2096,13 +2097,22 @@ document.querySelectorAll('.topup-btn').forEach(btn => {
     });
 });
 function openSendGiftModal(gift) {
-    // if (state.balance < gift.price) { ... } // Больше не нужно
     state.pendingGift = gift;
     const recipientConv = state.convs.find(c => c.id === state.activeConv);
     state.giftRecipientConv = recipientConv;
     const preview = document.getElementById('giftPreview');
-    if (preview) preview.innerHTML = `<img src="${gift.img}" alt="${gift.name}" style="width:100px;height:100px;object-fit:contain;"><div class="gp-name">${escapeHtml(gift.name)}</div><div class="gp-rarity rarity-${gift.rarity}">${rarityLabel[gift.rarity]}</div><div class="gp-price">💎 ${gift.price}</div>`;
-    const gr = document.getElementById('giftRecipient'); if (gr) gr.value = recipientConv ? recipientConv.name : 'Выберите чат';
+    if (preview) preview.innerHTML = `<img src="${gift.img}" alt="${gift.name}" style="width:100px;height:100px;object-fit:contain;" onerror="this.src='https://cdn.jsdelivr.net/npm/emoji-datasource-apple@15.0.1/img/apple/64/1f381.png'"><div class="gp-name">${escapeHtml(gift.name)}</div><div class="gp-rarity rarity-${gift.rarity}">${rarityLabel[gift.rarity]}</div><div class="gp-price">💎 ${gift.price}</div>`;
+    
+    // Выбор получателя: Текущий чат, Себе, или другой чат
+    const gr = document.getElementById('giftRecipient');
+    if (gr) {
+        gr.outerHTML = `<select id="giftRecipient" style="width:100%;padding:12px 14px;background:var(--bg-primary);border:1px solid var(--border);border-radius:10px;color:var(--text-primary);font-size:14px;font-family:inherit;">
+            <option value="self">🎁 Себе (в профиль)</option>
+            ${state.activeConv ? `<option value="${state.activeConv}">💬 В текущий чат (${escapeHtml(recipientConv.name)})</option>` : ''}
+            ${state.convs.filter(c => c.id !== state.activeConv).map(c => `<option value="${c.id}">💬 ${escapeHtml(c.name)}</option>`).join('')}
+        </select>`;
+    }
+    
     const gm = document.getElementById('giftMessage'); if (gm) gm.value = '';
     const mb = document.getElementById('modalBalance'); if (mb) mb.textContent = '∞';
     openModal('sendGiftModal');
@@ -2119,28 +2129,51 @@ if (sendGiftFromChatBtn) {
 const confirmSendGiftBtn = document.getElementById('confirmSendGiftBtn');
 if (confirmSendGiftBtn) {
     confirmSendGiftBtn.addEventListener('click', () => {
-        const gift = state.pendingGift, conv = state.giftRecipientConv;
+        const gift = state.pendingGift;
         if (!gift) return;
-        if (!conv) { sound.play('error'); showNotif('Ошибка', 'Откройте чат'); return; }
-        // state.balance -= gift.price; // Больше не нужно
+        
+        const recipientVal = document.getElementById('giftRecipient').value;
+        if (!recipientVal) { sound.play('error'); showNotif('Ошибка', 'Выберите получателя'); return; }
+        
         const giftNumber = Math.floor(Math.random() * 9000) + 1000;
         const gm = document.getElementById('giftMessage');
         const giftMessage = gm ? gm.value.trim() : '';
         const giftData = { id: gift.id, name: gift.name, img: gift.img, collection: gift.collection, rarity: gift.rarity, price: gift.price, number: giftNumber };
-        const msg = { id: Date.now() + Math.random(), author: state.profile.nickname, text: giftMessage, time: Date.now(), own: true, reactions: [], gift: giftData };
-        conv.messages.push(msg);
-        state.ownedGifts.push({ ...giftData, receivedAt: Date.now(), from: conv.name });
-        state.userProfileGifts.push({ ...giftData, from: conv.name, receivedAt: Date.now() });
+        
+        let targetName = 'Себе';
+        
+        if (recipientVal === 'self') {
+            // Добавляем в профиль и инвентарь
+            state.ownedGifts.push({ ...giftData, receivedAt: Date.now(), from: 'Себе' });
+            state.userProfileGifts.push({ ...giftData, from: 'Себе', receivedAt: Date.now() });
+        } else {
+            const conv = state.convs.find(c => c.id === recipientVal);
+            if (conv) {
+                targetName = conv.name;
+                const msg = { id: Date.now() + Math.random(), author: state.profile.nickname, text: giftMessage, time: Date.now(), own: true, reactions: [], gift: giftData };
+                conv.messages.push(msg);
+                state.ownedGifts.push({ ...giftData, receivedAt: Date.now(), from: conv.name });
+                state.userProfileGifts.push({ ...giftData, from: conv.name, receivedAt: Date.now() });
+                if (state.activeConv === conv.id) renderMessages();
+            }
+        }
+        
         saveToStorage();
-        const ba = document.getElementById('balanceAmount'); if (ba) ba.textContent = '∞';
-        const sg = document.getElementById('statGifts'); if (sg) sg.textContent = state.userProfileGifts.length;
-        if (gift.rarity === 'legend') { sound.play('legend'); showNotif('🎉 Легендарный подарок!', `${gift.name} → ${conv.name}`, '', true); }
-        else { sound.play('gift'); showNotif('Подарок отправлен', `${gift.name} → ${conv.name}`, '', true); }
+        
+        if (gift.rarity === 'legend') { sound.play('legend'); showNotif('🎉 Легендарный подарок!', `${gift.name} → ${targetName}`, '', true); }
+        else { sound.play('gift'); showNotif('Подарок отправлен', `${gift.name} → ${targetName}`, '', true); }
+        
         closeModal('sendGiftModal');
-        state.pendingGift = null; state.giftRecipientConv = null;
-        if (state.activeConv === conv.id) renderMessages();
+        state.pendingGift = null;
+        
         renderConvList(); renderGifts(); renderProfileGifts();
-        setTimeout(() => { const chatsTab = document.querySelector('.nav-item[data-tab="chats"]'); if (chatsTab) chatsTab.click(); setTimeout(() => openConv(conv.id), 150); }, 600);
+        
+        // Обновляем интерфейс
+        const chatsTab = document.querySelector('.nav-item[data-tab="chats"]'); 
+        if (chatsTab && recipientVal !== 'self') {
+            chatsTab.click(); 
+            setTimeout(() => openConv(recipientVal), 150);
+        }
     });
 }
 function renderProfileGifts() {
@@ -2154,7 +2187,7 @@ function renderProfileGifts() {
     }
     container.innerHTML = state.userProfileGifts.slice(-12).map(g => `
         <div style="background: linear-gradient(160deg, #1a2235, #0f172a); border: 1px solid var(--border); border-radius: 12px; padding: 10px 6px; text-align: center; ${g.rarity === 'legend' ? 'border-color: #fbbf24;' : ''}">
-            <img src="${g.img}" alt="${g.name}" style="width:40px;height:40px;object-fit:contain;margin-bottom:4px;">
+            <img src="${g.img}" alt="${g.name}" style="width:40px;height:40px;object-fit:contain;margin-bottom:4px;" onerror="this.src='https://cdn.jsdelivr.net/npm/emoji-datasource-apple@15.0.1/img/apple/64/1f381.png'">
             <div style="font-size: 11px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(g.name)}</div>
             <div style="font-size: 9px; color: var(--text-muted); font-family: monospace;">#${g.number}</div>
         </div>`).join('');
