@@ -211,9 +211,14 @@ const giftCatalog = [
     { id: '5170690322832818290', name: 'Кольцо', collection: 'Telegram', rarity: 'legend', price: 500, img: 'https://api.changes.tg/original/5170690322832818290.png?size=512' },
     { id: '5170521118301225164', name: 'Самоцвет', collection: 'Telegram', rarity: 'legend', price: 750, img: 'https://api.changes.tg/original/5170521118301225164.png?size=512' },
     
-    // Исправлена ссылка для Durov's Cap
-    { id: 'nft_plush_pepe', name: 'Plush Pepe', collection: 'Plush Pepe', rarity: 'legend', price: 7000, img: 'https://api.changes.tg/original/plush_pepe.png?size=512' },
-    { id: 'nft_durov_cap', name: "Durov's Cap", collection: "Durov's Cap", rarity: 'legend', price: 470, img: 'https://fragment.com/api/v1/nft/durovs-cap/1.png' },
+    // Разновидности Plush Pepe
+    { id: 'nft_plush_pepe_emerald', name: 'Emerald Plush', collection: 'Plush Pepe', rarity: 'legend', price: 6000, img: 'https://api.changes.tg/original/plush_pepe.png?size=512' },
+    { id: 'nft_plush_pepe_cold', name: 'Cold Heart', collection: 'Plush Pepe', rarity: 'epic', price: 5000, img: 'https://api.changes.tg/original/plush_pepe.png?size=512' },
+    { id: 'nft_plush_pepe_hue', name: 'Hue Jester', collection: 'Plush Pepe', rarity: 'epic', price: 4500, img: 'https://api.changes.tg/original/plush_pepe.png?size=512' },
+    { id: 'nft_plush_pepe_midas', name: 'Midas Pepe', collection: 'Plush Pepe', rarity: 'legend', price: 7000, img: 'https://api.changes.tg/original/plush_pepe.png?size=512' },
+    { id: 'nft_plush_pepe_ninja', name: 'Ninja Mike', collection: 'Plush Pepe', rarity: 'epic', price: 5500, img: 'https://api.changes.tg/original/plush_pepe.png?size=512' },
+    { id: 'nft_plush_pepe_spectrum', name: 'Spectrum', collection: 'Plush Pepe', rarity: 'rare', price: 4000, img: 'https://api.changes.tg/original/plush_pepe.png?size=512' },
+    
     { id: 'nft_heart_locket', name: 'Heart Locket', collection: 'Heart Locket', rarity: 'epic', price: 1444, img: 'https://api.changes.tg/original/heart_locket.png?size=512' },
     { id: 'nft_scared_cat', name: 'Scared Cat', collection: 'Scared Cat', rarity: 'epic', price: 299, img: 'https://api.changes.tg/original/scared_cat.png?size=512' },
     { id: 'nft_precious_peach', name: 'Precious Peach', collection: 'Precious Peach', rarity: 'rare', price: 290, img: 'https://api.changes.tg/original/precious_peach.png?size=512' },
@@ -241,7 +246,7 @@ const state = {
     accounts: [], drafts: {}, chatWallpapers: {},
     editingMsg: null, forwardMsg: null, activeCommentPost: null,
     recording: null, recordStart: 0, recordTimer: null, voiceBlob: null,
-    balance: Infinity, ownedGifts: [], giftTab: 'catalog', userProfileGifts: [],
+    balance: 500, ownedGifts: [], giftTab: 'catalog', userProfileGifts: [],
     pendingGift: null, giftRecipientConv: null,
     profile: { nickname: '', bio: '', avatarType: 'emoji', avatarEmoji: '😎', avatarColor: 0, avatarPhoto: null, avatarPhotoName: '', avatarPhotoSize: 0, banner: 'default', frame: 'none' },
     tempProfile: null
@@ -387,9 +392,16 @@ if (registerBtn) {
         setTimeout(() => {
             const nickname = login.charAt(0).toUpperCase() + login.slice(1);
             const isFirst = Object.keys(users).length === 0;
-            users[login] = { login, nickname, passwordHash: hashPassword(pwd), role: isFirst ? 'creator' : 'user', createdAt: Date.now(), lastLogin: Date.now(), profile: { nickname, bio: '', avatarType: 'emoji', avatarEmoji: '😎', avatarColor: 0, avatarPhoto: null, avatarPhotoName: '', avatarPhotoSize: 0, banner: 'default', frame: 'none' } };
+            users[login] = { 
+                login, nickname, passwordHash: hashPassword(pwd), 
+                role: isFirst ? 'creator' : 'user', 
+                balance: isFirst ? 999999999 : 500, // Бесконечный баланс только для первого (тебя)
+                createdAt: Date.now(), lastLogin: Date.now(), 
+                profile: { nickname, bio: '', avatarType: 'emoji', avatarEmoji: '😎', avatarColor: 0, avatarPhoto: null, avatarPhotoName: '', avatarPhotoSize: 0, banner: 'default', frame: 'none' }
+            };
             saveUsers(users);
             state.user = nickname; state.login = login; state.role = users[login].role;
+            state.balance = users[login].balance;
             state.profile = { ...users[login].profile };
             try { localStorage.setItem('lunar_session', JSON.stringify({ login, nickname, loginAt: Date.now() })); } catch(e) {}
             sound.play('success');
@@ -414,6 +426,7 @@ if (loginBtn) {
         setTimeout(() => {
             user.lastLogin = Date.now(); saveUsers(users);
             state.user = user.nickname; state.login = login; state.role = user.role || 'user';
+            state.balance = user.balance !== undefined ? user.balance : (user.role === 'creator' ? 999999999 : 500);
             state.profile = user.profile || { nickname: user.nickname, bio: '', avatarType: 'emoji', avatarEmoji: '😎', avatarColor: 0, avatarPhoto: null, avatarPhotoName: '', avatarPhotoSize: 0, banner: 'default', frame: 'none' };
             if (document.getElementById('rememberMe')?.checked) {
                 try { localStorage.setItem('lunar_session', JSON.stringify({ login, nickname: user.nickname, loginAt: Date.now() })); } catch(e) {}
@@ -466,8 +479,8 @@ function updateProfileUI() {
     const sm = document.getElementById('statMessages'); if (sm) sm.textContent = state.totalMessages;
     const sc = document.getElementById('statChats'); if (sc) sc.textContent = state.convs.length;
     const sp = document.getElementById('statPosts'); if (sp) sp.textContent = state.totalPosts;
-    const ba = document.getElementById('balanceAmount'); if (ba) ba.textContent = '∞';
-    const pba = document.getElementById('profileBalance'); if (pba) pba.textContent = '∞';
+    const ba = document.getElementById('balanceAmount'); if (ba) ba.textContent = state.balance === 999999999 ? '∞' : state.balance;
+    const pba = document.getElementById('profileBalance'); if (pba) pba.textContent = state.balance === 999999999 ? '∞' : state.balance;
     const rBtn = document.getElementById('quickRemovePhotoBtn');
     if (rBtn) rBtn.style.display = (p.avatarType === 'photo' && p.avatarPhoto) ? 'flex' : 'none';
 }
@@ -511,6 +524,7 @@ if (logoutBtn) {
             if (users[s.login]) {
                 state.user = s.nickname; state.login = s.login;
                 state.role = users[s.login].role || 'user';
+                state.balance = users[s.login].balance !== undefined ? users[s.login].balance : (state.role === 'creator' ? 999999999 : 500);
                 state.profile = users[s.login].profile || { nickname: s.nickname, bio: '', avatarType: 'emoji', avatarEmoji: '😎', avatarColor: 0, avatarPhoto: null, avatarPhotoName: '', avatarPhotoSize: 0, banner: 'default', frame: 'none' };
                 state.accounts = JSON.parse(localStorage.getItem('lunar_multi_accounts') || '[]');
                 setTimeout(() => { enterApp(); showNotif('С возвращением!', s.nickname); }, 300);
@@ -526,7 +540,6 @@ function saveToStorage() {
         localStorage.setItem('lunar_stats', JSON.stringify({ totalMessages: state.totalMessages, totalPosts: state.totalPosts }));
         localStorage.setItem('lunar_drafts', JSON.stringify(state.drafts));
         localStorage.setItem('lunar_wallpapers', JSON.stringify(state.chatWallpapers));
-        localStorage.setItem('lunar_balance', JSON.stringify(state.balance));
         localStorage.setItem('lunar_owned_gifts', JSON.stringify(state.ownedGifts));
         localStorage.setItem('lunar_profile_gifts', JSON.stringify(state.userProfileGifts));
         if (state.pin !== null) localStorage.setItem('lunar_pin', JSON.stringify({ pin: state.pin, autolock: state.pinAutolock }));
@@ -536,6 +549,7 @@ function saveToStorage() {
                 users[state.login].profile = state.profile;
                 users[state.login].nickname = state.profile.nickname;
                 users[state.login].role = state.role;
+                users[state.login].balance = state.balance;
                 saveUsers(users);
             }
         }
@@ -551,8 +565,6 @@ function loadFromStorage() {
         if (drafts) state.drafts = JSON.parse(drafts);
         const wp = localStorage.getItem('lunar_wallpapers');
         if (wp) state.chatWallpapers = JSON.parse(wp);
-        const balance = localStorage.getItem('lunar_balance');
-        if (balance !== null) state.balance = Infinity; // Всегда бесконечность
         const owned = localStorage.getItem('lunar_owned_gifts');
         if (owned) state.ownedGifts = JSON.parse(owned);
         const pg = localStorage.getItem('lunar_profile_gifts');
@@ -807,12 +819,29 @@ function renderMessages() {
                 <div class="message-time">${formatTime(m.time)}${m.expiresAt ? ' ⏱' : ''}</div>
             </div>
             <div class="msg-actions">
-                <button data-action="reply" data-id="${m.id}" title="Ответить">${emojiImg('↩️')}</button>
-                <button data-action="react" data-id="${m.id}" title="Реакция">${emojiImg('😊')}</button>
-                <button data-action="copy" data-id="${m.id}" title="Копировать">${emojiImg('📋')}</button>
-                <button data-action="forward" data-id="${m.id}" title="Переслать">${emojiImg('↪️')}</button>
-                <button data-action="pin" data-id="${m.id}" title="Закрепить">${emojiImg('📌')}</button>
-                ${own ? `<button data-action="edit" data-id="${m.id}" title="Изменить">${emojiImg('✏️')}</button><button data-action="delete" data-id="${m.id}" title="Удалить">${emojiImg('🗑️')}</button>` : ''}
+                <button data-action="reply" data-id="${m.id}" title="Ответить">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 17l-5-5 5-5M4 12h11a4 4 0 0 1 4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <button data-action="react" data-id="${m.id}" title="Реакция">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" stroke="currentColor" stroke-width="2"/><path d="M8 14s1.5 2 4 2 4-2 4-2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="9" cy="9" r="1.5" fill="currentColor"/><circle cx="15" cy="9" r="1.5" fill="currentColor"/></svg>
+                </button>
+                <button data-action="copy" data-id="${m.id}" title="Копировать">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="13" height="13" rx="2" ry="2" stroke="currentColor" stroke-width="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" stroke="currentColor" stroke-width="2"/></svg>
+                </button>
+                <button data-action="forward" data-id="${m.id}" title="Переслать">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 17l5-5-5-5M20 12H9a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <button data-action="pin" data-id="${m.id}" title="Закрепить">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 17v5M9 10.76V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4.76a4 4 0 0 0 1.17 2.83l.83.82v2H7v-2l.83-.82A4 4 0 0 0 9 10.76z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+                </button>
+                ${own ? `
+                <button data-action="edit" data-id="${m.id}" title="Изменить">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <button data-action="delete" data-id="${m.id}" title="Удалить">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+                </button>
+                ` : ''}
             </div>
         </div>`;
     });
@@ -1001,6 +1030,7 @@ document.querySelectorAll('.nav-item').forEach(item => {
         if (tab === 'profile') updateProfileUI();
         if (tab === 'friends') renderFriends();
         if (tab === 'gifts') renderGifts();
+        if (tab === 'my-gifts') renderMyGifts();
     });
 });
 const backBtn = document.getElementById('backBtn');
@@ -2042,7 +2072,7 @@ if (sendCommentBtn) {
 function renderGifts() {
     const grid = document.getElementById('giftsGrid');
     if (!grid) return;
-    const ba = document.getElementById('balanceAmount'); if (ba) ba.textContent = '∞';
+    const ba = document.getElementById('balanceAmount'); if (ba) ba.textContent = state.balance === 999999999 ? '∞' : state.balance;
     const oc = document.getElementById('ownedCount'); if (oc) oc.textContent = state.ownedGifts.length;
     if (state.giftTab === 'owned') {
         if (!state.ownedGifts.length) {
@@ -2087,23 +2117,25 @@ if (topupBtn) topupBtn.addEventListener('click', () => { sound.play('click'); op
 document.querySelectorAll('.topup-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         const amount = parseInt(btn.dataset.amount);
-        // state.balance += amount; // Больше не нужно, баланс бесконечный
+        if (state.balance !== 999999999) state.balance += amount;
         saveToStorage();
-        const ba = document.getElementById('balanceAmount'); if (ba) ba.textContent = '∞';
-        const mb = document.getElementById('modalBalance'); if (mb) mb.textContent = '∞';
+        const ba = document.getElementById('balanceAmount'); if (ba) ba.textContent = state.balance === 999999999 ? '∞' : state.balance;
+        const mb = document.getElementById('modalBalance'); if (mb) mb.textContent = state.balance === 999999999 ? '∞' : state.balance;
         sound.play('success');
         showNotif('Изумруды пополнены', `+${amount} 💎`);
         closeModal('topupModal');
     });
 });
 function openSendGiftModal(gift) {
+    if (state.balance !== 999999999 && state.balance < gift.price) {
+        sound.play('error'); showNotif('Недостаточно изумрудов', `Нужно ещё ${gift.price - state.balance} 💎`); return;
+    }
     state.pendingGift = gift;
     const recipientConv = state.convs.find(c => c.id === state.activeConv);
     state.giftRecipientConv = recipientConv;
     const preview = document.getElementById('giftPreview');
     if (preview) preview.innerHTML = `<img src="${gift.img}" alt="${gift.name}" style="width:100px;height:100px;object-fit:contain;" onerror="this.src='https://cdn.jsdelivr.net/npm/emoji-datasource-apple@15.0.1/img/apple/64/1f381.png'"><div class="gp-name">${escapeHtml(gift.name)}</div><div class="gp-rarity rarity-${gift.rarity}">${rarityLabel[gift.rarity]}</div><div class="gp-price">💎 ${gift.price}</div>`;
     
-    // Выбор получателя: Текущий чат, Себе, или другой чат
     const gr = document.getElementById('giftRecipient');
     if (gr) {
         gr.outerHTML = `<select id="giftRecipient" style="width:100%;padding:12px 14px;background:var(--bg-primary);border:1px solid var(--border);border-radius:10px;color:var(--text-primary);font-size:14px;font-family:inherit;">
@@ -2114,7 +2146,7 @@ function openSendGiftModal(gift) {
     }
     
     const gm = document.getElementById('giftMessage'); if (gm) gm.value = '';
-    const mb = document.getElementById('modalBalance'); if (mb) mb.textContent = '∞';
+    const mb = document.getElementById('modalBalance'); if (mb) mb.textContent = state.balance === 999999999 ? '∞' : state.balance;
     openModal('sendGiftModal');
 }
 const sendGiftFromChatBtn = document.getElementById('sendGiftFromChatBtn');
@@ -2135,6 +2167,10 @@ if (confirmSendGiftBtn) {
         const recipientVal = document.getElementById('giftRecipient').value;
         if (!recipientVal) { sound.play('error'); showNotif('Ошибка', 'Выберите получателя'); return; }
         
+        if (state.balance !== 999999999 && state.balance < gift.price) { sound.play('error'); showNotif('Недостаточно изумрудов', 'Пополните баланс'); return; }
+        
+        if (state.balance !== 999999999) state.balance -= gift.price;
+        
         const giftNumber = Math.floor(Math.random() * 9000) + 1000;
         const gm = document.getElementById('giftMessage');
         const giftMessage = gm ? gm.value.trim() : '';
@@ -2143,7 +2179,6 @@ if (confirmSendGiftBtn) {
         let targetName = 'Себе';
         
         if (recipientVal === 'self') {
-            // Добавляем в профиль и инвентарь
             state.ownedGifts.push({ ...giftData, receivedAt: Date.now(), from: 'Себе' });
             state.userProfileGifts.push({ ...giftData, from: 'Себе', receivedAt: Date.now() });
         } else {
@@ -2160,19 +2195,20 @@ if (confirmSendGiftBtn) {
         
         saveToStorage();
         
+        const ba = document.getElementById('balanceAmount'); if (ba) ba.textContent = state.balance === 999999999 ? '∞' : state.balance;
+        const sg = document.getElementById('statGifts'); if (sg) sg.textContent = state.userProfileGifts.length;
+        
         if (gift.rarity === 'legend') { sound.play('legend'); showNotif('🎉 Легендарный подарок!', `${gift.name} → ${targetName}`, '', true); }
         else { sound.play('gift'); showNotif('Подарок отправлен', `${gift.name} → ${targetName}`, '', true); }
         
         closeModal('sendGiftModal');
         state.pendingGift = null;
         
-        renderConvList(); renderGifts(); renderProfileGifts();
+        renderConvList(); renderGifts(); renderProfileGifts(); renderMyGifts();
         
-        // Обновляем интерфейс
-        const chatsTab = document.querySelector('.nav-item[data-tab="chats"]'); 
-        if (chatsTab && recipientVal !== 'self') {
-            chatsTab.click(); 
-            setTimeout(() => openConv(recipientVal), 150);
+        if (recipientVal !== 'self') {
+            const chatsTab = document.querySelector('.nav-item[data-tab="chats"]'); 
+            if (chatsTab) { chatsTab.click(); setTimeout(() => openConv(recipientVal), 150); }
         }
     });
 }
@@ -2180,7 +2216,7 @@ function renderProfileGifts() {
     const container = document.getElementById('profileGifts');
     if (!container) return;
     const sg = document.getElementById('statGifts'); if (sg) sg.textContent = state.userProfileGifts.length;
-    const pb = document.getElementById('profileBalance'); if (pb) pb.textContent = '∞';
+    const pb = document.getElementById('profileBalance'); if (pb) pb.textContent = state.balance === 999999999 ? '∞' : state.balance;
     if (!state.userProfileGifts.length) {
         container.innerHTML = '<div style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 20px; grid-column: 1/-1;">Пока нет подарков</div>';
         return;
@@ -2190,6 +2226,29 @@ function renderProfileGifts() {
             <img src="${g.img}" alt="${g.name}" style="width:40px;height:40px;object-fit:contain;margin-bottom:4px;" onerror="this.src='https://cdn.jsdelivr.net/npm/emoji-datasource-apple@15.0.1/img/apple/64/1f381.png'">
             <div style="font-size: 11px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(g.name)}</div>
             <div style="font-size: 9px; color: var(--text-muted); font-family: monospace;">#${g.number}</div>
+        </div>`).join('');
+}
+
+/* ============ ВКЛАДКА "МОИ ПОДАРКИ" ============ */
+function renderMyGifts() {
+    const grid = document.getElementById('myGiftsGrid');
+    if (!grid) return;
+    const countEl = document.getElementById('myGiftsCount');
+    if (countEl) countEl.textContent = state.userProfileGifts.length;
+    
+    if (!state.userProfileGifts.length) {
+        grid.innerHTML = `<div class="gifts-empty" style="grid-column: 1/-1;"><div style="font-size:40px;">🎁</div><div style="font-size: 16px; font-weight: 600; color: var(--text-secondary);">У вас пока нет подарков</div><div style="font-size:13px;">Подарите себе что-нибудь из каталога!</div></div>`;
+        return;
+    }
+    
+    grid.innerHTML = state.userProfileGifts.slice().reverse().map(g => `
+        <div class="gift-item rarity-${g.rarity}" style="cursor: default;">
+            <img src="${g.img}" alt="${g.name}" style="width:64px;height:64px;object-fit:contain;" onerror="this.src='https://cdn.jsdelivr.net/npm/emoji-datasource-apple@15.0.1/img/apple/64/1f381.png'">
+            <div class="g-name">${escapeHtml(g.name)}</div>
+            <div class="g-collection" style="font-size:10px;color:var(--text-muted);">От: ${escapeHtml(g.from || 'Себе')}</div>
+            <div class="g-rarity rarity-${g.rarity}">${rarityLabel[g.rarity]}</div>
+            <div class="g-price">💎 ${g.price}</div>
+            <div class="g-owned" style="background: var(--emerald);">#${g.number}</div>
         </div>`).join('');
 }
 
@@ -2248,6 +2307,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderPinPad();
     updatePinDots();
     renderSavedAccounts();
+    renderMyGifts();
     document.addEventListener('click', () => { state.lastActivity = Date.now(); });
     document.addEventListener('keydown', () => { state.lastActivity = Date.now(); });
 });
