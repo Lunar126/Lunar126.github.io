@@ -1,4 +1,4 @@
-/* ============ APPLE EMOJI ============ */
+/* ============ APPLE EMOJI (БАЗОВЫЕ) ============ */
 const APPLE_CDN = 'https://cdn.jsdelivr.net/npm/emoji-datasource-apple@15.0.1/img/apple/64/';
 function emojiToCodepoint(char) {
     let cp = char.codePointAt(0).toString(16);
@@ -20,6 +20,92 @@ function applyEmojiToStatic() {
         if (el.querySelector('img.emoji')) return;
         el.innerHTML = emojiImg(el.getAttribute('data-emoji'), el.getAttribute('data-size') || '');
     });
+}
+
+/* ============ ЗАГРУЗКА ВСЕХ ЭМОДЗИ APPLE ============ */
+let ALL_EMOJIS_APPLE = null;
+
+async function loadAllAppleEmojis() {
+    if (ALL_EMOJIS_APPLE) return ALL_EMOJIS_APPLE;
+    try {
+        const res = await fetch('https://cdn.jsdelivr.net/npm/emoji-datasource-apple@15.0.1/emoji.json');
+        const data = await res.json();
+        ALL_EMOJIS_APPLE = data.filter(e => e.has_img_apple === true);
+        return ALL_EMOJIS_APPLE;
+    } catch (e) {
+        console.warn('Не удалось загрузить все эмодзи', e);
+        return null;
+    }
+}
+
+async function renderAllEmojiPicker() {
+    const scroll = document.getElementById('emojiScroll');
+    if (!scroll) return;
+    scroll.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-muted);">Загрузка эмодзи...</div>';
+    const emojis = await loadAllAppleEmojis();
+    
+    if (!emojis) {
+        scroll.innerHTML = '<div style="padding:20px;text-align:center;color:var(--danger);">Ошибка загрузки</div>';
+        return;
+    }
+    
+    const groups = {};
+    emojis.forEach(e => {
+        const cat = e.category || 'Разное';
+        if (!groups[cat]) groups[cat] = [];
+        groups[cat].push(e);
+    });
+    
+    let html = '';
+    for (const [cat, list] of Object.entries(groups)) {
+        html += `<div class="emoji-section-title">${cat}</div><div class="emoji-grid">`;
+        list.forEach(e => {
+            const imgUrl = `https://cdn.jsdelivr.net/npm/emoji-datasource-apple@15.0.1/img/apple/64/${e.image}`;
+            const char = String.fromCodePoint(...e.unified.split('-').map(h => parseInt(h, 16)));
+            html += `<button class="emoji-item" data-emoji="${char}" title="${e.short_name}">
+                <img src="${imgUrl}" alt="${e.short_name}" loading="lazy" style="width:24px;height:24px;pointer-events:none;">
+            </button>`;
+        });
+        html += '</div>';
+    }
+    scroll.innerHTML = html;
+    
+    scroll.querySelectorAll('.emoji-item').forEach(b => b.addEventListener('click', () => {
+        const input = document.getElementById('messageInput');
+        if (input) { input.value += b.dataset.emoji; input.focus(); }
+    }));
+}
+
+async function searchAllEmojis(query) {
+    const scroll = document.getElementById('emojiScroll');
+    if (!scroll) return;
+    const q = query.toLowerCase().trim();
+    if (!q) { renderAllEmojiPicker(); return; }
+    
+    const emojis = await loadAllAppleEmojis();
+    if (!emojis) return;
+    
+    const filtered = emojis.filter(e => e.name.includes(q) || e.short_name.includes(q));
+    if (!filtered.length) {
+        scroll.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-muted);">Ничего не найдено</div>';
+        return;
+    }
+    
+    let html = `<div class="emoji-section-title">Найдено: ${filtered.length}</div><div class="emoji-grid">`;
+    filtered.slice(0, 200).forEach(e => {
+        const imgUrl = `https://cdn.jsdelivr.net/npm/emoji-datasource-apple@15.0.1/img/apple/64/${e.image}`;
+        const char = String.fromCodePoint(...e.unified.split('-').map(h => parseInt(h, 16)));
+        html += `<button class="emoji-item" data-emoji="${char}" title="${e.short_name}">
+            <img src="${imgUrl}" alt="${e.short_name}" loading="lazy" style="width:24px;height:24px;pointer-events:none;">
+        </button>`;
+    });
+    html += '</div>';
+    scroll.innerHTML = html;
+    
+    scroll.querySelectorAll('.emoji-item').forEach(b => b.addEventListener('click', () => {
+        const input = document.getElementById('messageInput');
+        if (input) { input.value += b.dataset.emoji; input.focus(); }
+    }));
 }
 
 /* ============ THEMES ============ */
@@ -108,20 +194,10 @@ const emojiCategories = {
     'Часто': ['😀','😂','🥰','😎','🔥','👍','❤️','✨','🎉','💯'],
     'Смайлы': ['😀','😃','😄','😁','😆','😅','😂','🤣','🥲','😊','😇','🙂','🙃','😉','😌','😍','🥰','😘','😗','😙','😚','😋','😛','😝','😜','🤪','🤨','🧐','🤓','😎','🥸','🤩','🥳','😏','😒','😞','😔','😟','😕','🙁','☹️','😣','😖','😫','😩','🥺','😢','😭','😤','😠','😡','🤬','🤯','😳','🥵','🥶','😱','😨','😰','😥','😓','🤗','🤔','🤭','🤫','🤥','😶','😐','😑','😬','🙄','😯','😦','😧','😮','😲','🥱','😴','🤤','😪','😵','🤐','🥴','🤢','🤮','🤧','😷','🤒','🤕'],
     'Животные': ['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🐷','🐸','🐵','🙈','🙉','🙊','🐒','🐔','🐧','🐦','🐤','🦆','🦅','🦉','🦇','🐺','🐗','🐴','🦄','🐝','🦋','🐌','🐞','🐜','🦟','🦗','🕷','🦂','🐢','🐍','🦎','🦖','🦕','🐙','🦑','🦐','🦞','🦀','🐡','🐠','🐟','🐬','🐳','🐋','🦈','🐊','🐅','🐆','🦓','🦍','🦧','🐘','🦛','🦏','🐪','🐫','🦒','🦘','🐃','🐂','🐄','🐎','🐖','🐏','🐑','🦙','🐐','🦌','🐕','🐩','🦮','🐈','🐓','🦃','🦚','🦜','🦢','🦩','🕊','🐇','🦝','🦨','🦡','🦦','🦥','🐁','🐀','🐿','🦔'],
-    'Еда': ['🍎','🍐','🍊','🍋','🍌','🍉','🍇','🍓','🫐','🍈','🍒','🍑','🥭','🍍','🥥','🥝','🍅','🍆','🥑','🥦','🥬','🥒','🌶','🫑','🌽','🥕','🫒','🧄','🧅','🥔','🍠','🥐','🥯','🍞','🥖','🥨','🧀','🥚','🍳','🧈','🥞','🧇','🥓','🥩','🍗','🍖','🦴','🌭','🍔','🍟','🍕','🫓','🥪','🥙','🧆','🌮','🌯','🫔','🥗','🥘','🫕','🥫','🍝','🍜','🍲','🍛','🍣','🍱','🥟','🦪','🍤','🍙','🍚','🍘','🍥','🥠','🥮','🍢','🍡','🍧','🍨','🍦','🥧','🧁','🍰','🎂','🍮','🍭','🍬','🍫','🍿','🍩','🍪','🌰','🥜','🍯','🥛','🍼','☕','🫖','🍵','🧃','🥤','🧋','🍶','🍺','🍻','🥂','🍷','🥃','🍸','🍹','🧉','🍾'],
-    'Символы': ['❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💔','❣️','💕','💞','💓','💗','💖','💘','💝','💟','☮️','✝️','☪️','🕉','☸️','✡️','🔯','🕎','☯️','☦️','🛐','⛎','♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓','🆔','⚛️','🉑','☢️','☣️','📴','📳','🈶','🈚','🈸','🈺','🈷️','✴️','🆚','💮','🉐','㊙️','㊗️','🈴','🈵','🈹','🈲','🅰️','🅱️','🆎','🆑','🅾️','🆘','❌','⭕','🛑','⛔','📛','🚫','💯','💢','♨️','🚷','🚯','🚳','🚱','🔞','📵','🚭','❗','❕','❓','❔','‼️','⁉️','🔅','🔆','〽️','⚠️','🚸','🔱','⚜️','🔰','♻️','✅','🈯','💹','❇️','✳️','❎','🌐','💠','Ⓜ️','🌀','💤','🏧','🚾','♿','🅿️','🛗','🈳','🈂️','🛂','🛃','🛄','🛅','🚹','🚺','🚼','⚧','🚻','🚮','🎦','📶','🈁','🔣','ℹ️','🔤','🔡','🔠','🆖','🆗','🆙','🆒','🆕','🆓','0️⃣','1️⃣','2️⃣','3️⃣','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟','🔢','#️⃣','*️⃣','⏏️','▶️','⏸','⏯','⏹','⏺','⏭','⏮','⏩','⏪','⏫','⏬','◀️','🔼','🔽','➡️','⬅️','⬆️','⬇️','↗️','↘️','↙️','↖️','↕️','↔️','↩️','↪️','⤴️','⤵️','🔀','🔁','🔂','🔄','🔃','🎵','🎶','➕','➖','➗','✖️','🟰','♾️','💲','💱','™️','©️','®️','👁️‍🗨️','🔚','🔙','🔛','🔝','🔜','〰️','➰','➿','✔️','☑️','🔘','🔴','🟠','🟡','🟢','🔵','🟣','⚫','⚪','🟤','🔺','🔻','🔸','🔹','🔶','🔷','🔳','🔲','▪️','▫️','◾','◽','◼️','◻️','🟥','🟧','🟨','🟩','🟦','🟪','⬛','⬜','🟫','🔈','🔇','🔉','🔊','🔔','🔕','📣','📢','💬','💭','🗯','♠️','♣️','♥️','♦️','🃏','🎴','🀄','🕐','🕑','🕒','🕓','🕔','🕕','🕖','🕗','🕘','🕙','🕚','🕛']
-};
-const smartReplyPool = {
-    greeting: ['Привет! 👋','Как дела?','Добрый день'],
-    thanks: ['Спасибо! 🙏','Благодарю','Отлично, спасибо'],
-    ok: ['Ок 👌','Хорошо','Понял','Договорились'],
-    question: ['Сейчас посмотрю','Скоро отвечу','Интересный вопрос'],
-    yes: ['Да','Конечно','Согласен'],
-    no: ['Нет','Не сейчас','Не могу'],
-    default: ['👍','Ок','Спасибо','Понял','Хорошо']
+    'Еда': ['🍎','🍐','🍊','🍋','🍌','🍉','🍇','🍓','🫐','🍈','🍒','🍑','🥭','🍍','🥥','🥝','🍅','🍆','🥑','🥦','🥬','🥒','🌶','🫑','🌽','🥕','🫒','🧄','🧅','🥔','🍠','🥐','🥯','🍞','🥖','🥨','🧀','🥚','🍳','🧈','🥞','🧇','🥓','🥩','🍗','🍖','🦴','🌭','🍔','🍟','🍕','🫓','🥪','🥙','🧆','🌮','🌯','🫔','🥗','🥘','🫕','🥫','🍝','🍜','🍲','🍛','🍣','🍱','🥟','🦪','🍤','🍙','🍚','🍘','🍥','🥠','🥮','🍢','🍡','🍧','🍨','🍦','🥧','🧁','🍰','🎂','🍮','🍭','🍬','🍫','🍿','🍩','🍪','🌰','🥜','🍯','🥛','🍼','☕','🫖','🍵','🧃','🥤','🧋','🍶','🍺','🍻','🥂','🍷','🥃','🍸','🍹','🧉','🍾']
 };
 
-/* ============ ПОДАРКИ ============ */
+/* ============ ПОДАРКИ TELEGRAM ============ */
 const giftCatalog = [
     { id: '5170145012310081615', name: 'Сердечко', collection: 'Telegram', rarity: 'common', price: 15, img: 'https://api.changes.tg/original/5170145012310081615.png?size=512' },
     { id: '5170233102089322756', name: 'Мишка', collection: 'Telegram', rarity: 'common', price: 20, img: 'https://api.changes.tg/original/5170233102089322756.png?size=512' },
@@ -133,7 +209,19 @@ const giftCatalog = [
     { id: '6028601630662853006', name: 'Шампанское', collection: 'Telegram', rarity: 'epic', price: 180, img: 'https://api.changes.tg/original/6028601630662853006.png?size=512' },
     { id: '5168043875654172773', name: 'Кубок', collection: 'Telegram', rarity: 'epic', price: 200, img: 'https://api.changes.tg/original/5168043875654172773.png?size=512' },
     { id: '5170690322832818290', name: 'Кольцо', collection: 'Telegram', rarity: 'legend', price: 500, img: 'https://api.changes.tg/original/5170690322832818290.png?size=512' },
-    { id: '5170521118301225164', name: 'Самоцвет', collection: 'Telegram', rarity: 'legend', price: 750, img: 'https://api.changes.tg/original/5170521118301225164.png?size=512' }
+    { id: '5170521118301225164', name: 'Самоцвет', collection: 'Telegram', rarity: 'legend', price: 750, img: 'https://api.changes.tg/original/5170521118301225164.png?size=512' },
+    
+    { id: 'nft_plush_pepe', name: 'Plush Pepe', collection: 'Plush Pepe', rarity: 'legend', price: 7000, img: 'https://api.changes.tg/original/plush_pepe.png?size=512' },
+    { id: 'nft_durov_cap', name: "Durov's Cap", collection: "Durov's Cap", rarity: 'legend', price: 470, img: 'https://api.changes.tg/original/durov_cap.png?size=512' },
+    { id: 'nft_heart_locket', name: 'Heart Locket', collection: 'Heart Locket', rarity: 'epic', price: 1444, img: 'https://api.changes.tg/original/heart_locket.png?size=512' },
+    { id: 'nft_scared_cat', name: 'Scared Cat', collection: 'Scared Cat', rarity: 'epic', price: 299, img: 'https://api.changes.tg/original/scared_cat.png?size=512' },
+    { id: 'nft_precious_peach', name: 'Precious Peach', collection: 'Precious Peach', rarity: 'rare', price: 290, img: 'https://api.changes.tg/original/precious_peach.png?size=512' },
+    { id: 'nft_loot_bag', name: 'Loot Bag', collection: 'Loot Bag', rarity: 'rare', price: 141, img: 'https://api.changes.tg/original/loot_bag.png?size=512' },
+    { id: 'nft_ion_gem', name: 'Ion Gem', collection: 'Ion Gem', rarity: 'common', price: 85, img: 'https://api.changes.tg/original/ion_gem.png?size=512' },
+    { id: 'nft_swiss_watch', name: 'Swiss Watch', collection: 'Swiss Watch', rarity: 'epic', price: 65, img: 'https://api.changes.tg/original/swiss_watch.png?size=512' },
+    { id: 'nft_voodoo_doll', name: 'Voodoo Doll', collection: 'Voodoo Doll', rarity: 'common', price: 43, img: 'https://api.changes.tg/original/voodoo_doll.png?size=512' },
+    { id: 'nft_diamond_ring', name: 'Diamond Ring', collection: 'Diamond Ring', rarity: 'rare', price: 36, img: 'https://api.changes.tg/original/diamond_ring.png?size=512' },
+    { id: 'nft_eternal_rose', name: 'Eternal Rose', collection: 'Eternal Rose', rarity: 'rare', price: 35, img: 'https://api.changes.tg/original/eternal_rose.png?size=512' }
 ];
 const rarityLabel = { common: 'Обычный', rare: 'Редкий', epic: 'Эпический', legend: 'Легендарный' };
 
@@ -152,7 +240,7 @@ const state = {
     accounts: [], drafts: {}, chatWallpapers: {},
     editingMsg: null, forwardMsg: null, activeCommentPost: null,
     recording: null, recordStart: 0, recordTimer: null, voiceBlob: null,
-    balance: 500, ownedGifts: [], giftTab: 'catalog', userProfileGifts: [],
+    balance: Infinity, ownedGifts: [], giftTab: 'catalog', userProfileGifts: [],
     pendingGift: null, giftRecipientConv: null,
     profile: { nickname: '', bio: '', avatarType: 'emoji', avatarEmoji: '😎', avatarColor: 0, avatarPhoto: null, avatarPhotoName: '', avatarPhotoSize: 0, banner: 'default', frame: 'none' },
     tempProfile: null
@@ -377,8 +465,8 @@ function updateProfileUI() {
     const sm = document.getElementById('statMessages'); if (sm) sm.textContent = state.totalMessages;
     const sc = document.getElementById('statChats'); if (sc) sc.textContent = state.convs.length;
     const sp = document.getElementById('statPosts'); if (sp) sp.textContent = state.totalPosts;
-    const ba = document.getElementById('balanceAmount'); if (ba) ba.textContent = state.balance;
-    const pba = document.getElementById('profileBalance'); if (pba) pba.textContent = state.balance;
+    const ba = document.getElementById('balanceAmount'); if (ba) ba.textContent = '∞';
+    const pba = document.getElementById('profileBalance'); if (pba) pba.textContent = '∞';
     const rBtn = document.getElementById('quickRemovePhotoBtn');
     if (rBtn) rBtn.style.display = (p.avatarType === 'photo' && p.avatarPhoto) ? 'flex' : 'none';
 }
@@ -463,7 +551,7 @@ function loadFromStorage() {
         const wp = localStorage.getItem('lunar_wallpapers');
         if (wp) state.chatWallpapers = JSON.parse(wp);
         const balance = localStorage.getItem('lunar_balance');
-        if (balance !== null) state.balance = JSON.parse(balance);
+        if (balance !== null) state.balance = Infinity; // Всегда бесконечность
         const owned = localStorage.getItem('lunar_owned_gifts');
         if (owned) state.ownedGifts = JSON.parse(owned);
         const pg = localStorage.getItem('lunar_profile_gifts');
@@ -1273,42 +1361,19 @@ if (createPollBtn) {
 
 /* ============ EMOJI PICKER ============ */
 function renderEmojiPicker() {
-    const cats = document.getElementById('emojiCategories');
-    if (!cats) return;
-    cats.innerHTML = Object.keys(emojiCategories).map((cat, i) => `<button class="emoji-cat-btn${i === 0 ? ' active' : ''}" data-cat="${cat}">${emojiCategories[cat][0]}</button>`).join('');
-    cats.querySelectorAll('.emoji-cat-btn').forEach(b => b.addEventListener('click', () => {
-        cats.querySelectorAll('.emoji-cat-btn').forEach(x => x.classList.remove('active'));
-        b.classList.add('active');
-        renderEmojiSection(b.dataset.cat);
-    }));
-    renderEmojiSection('Часто');
-}
-function renderEmojiSection(cat) {
-    const scroll = document.getElementById('emojiScroll');
-    if (!scroll) return;
-    const emojis = emojiCategories[cat] || [];
-    scroll.innerHTML = `<div class="emoji-section-title">${cat}</div><div class="emoji-grid">${emojis.map(e => `<button class="emoji-item" data-emoji="${e}">${emojiImg(e)}</button>`).join('')}</div>`;
-    scroll.querySelectorAll('.emoji-item').forEach(b => b.addEventListener('click', () => {
-        const input = document.getElementById('messageInput');
-        if (input) { input.value += b.dataset.emoji; input.focus(); }
-    }));
+    renderAllEmojiPicker();
 }
 const emojiBtn = document.getElementById('emojiBtn');
-if (emojiBtn) emojiBtn.addEventListener('click', () => { sound.play('click'); renderEmojiPicker(); openModal('emojiModal'); });
+if (emojiBtn) emojiBtn.addEventListener('click', () => { sound.play('click'); renderAllEmojiPicker(); openModal('emojiModal'); });
+
 const emojiModalSearch = document.getElementById('emojiModalSearch');
 if (emojiModalSearch) {
+    let searchTimeout = null;
     emojiModalSearch.addEventListener('input', (e) => {
-        const q = e.target.value.toLowerCase().trim();
-        if (!q) { renderEmojiSection('Часто'); return; }
-        const allEmojis = Object.values(emojiCategories).flat();
-        const filtered = allEmojis.filter(e => e.includes(q) || e.toLowerCase().includes(q));
-        const scroll = document.getElementById('emojiScroll');
-        if (!scroll) return;
-        scroll.innerHTML = `<div class="emoji-section-title">Найдено: ${filtered.length}</div><div class="emoji-grid">${filtered.slice(0, 60).map(e => `<button class="emoji-item" data-emoji="${e}">${emojiImg(e)}</button>`).join('')}</div>`;
-        scroll.querySelectorAll('.emoji-item').forEach(b => b.addEventListener('click', () => { 
-            const input = document.getElementById('messageInput');
-            if (input) input.value += b.dataset.emoji; 
-        }));
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            searchAllEmojis(e.target.value);
+        }, 300);
     });
 }
 
@@ -1442,13 +1507,13 @@ function updateSmartReplies() {
     const last = conv.messages[conv.messages.length - 1];
     if (last.own) { sr.style.display = 'none'; return; }
     const text = (last.text || '').toLowerCase();
-    let suggestions = smartReplyPool.default;
-    if (/привет|хай|здрав|добр/.test(text)) suggestions = smartReplyPool.greeting;
-    else if (/спасиб|благодар/.test(text)) suggestions = smartReplyPool.thanks;
-    else if (/ок|хорошо|ладно|понял/.test(text)) suggestions = smartReplyPool.ok;
-    else if (/\?$|как|что|где|когда|почему/.test(text)) suggestions = smartReplyPool.question;
-    else if (/да|конечно|соглас/.test(text)) suggestions = smartReplyPool.yes;
-    else if (/нет|не/.test(text)) suggestions = smartReplyPool.no;
+    let suggestions = ['👍','Ок','Спасибо','Понял','Хорошо'];
+    if (/привет|хай|здрав|добр/.test(text)) suggestions = ['Привет! 👋','Как дела?','Добрый день'];
+    else if (/спасиб|благодар/.test(text)) suggestions = ['Спасибо! 🙏','Благодарю','Отлично, спасибо'];
+    else if (/ок|хорошо|ладно|понял/.test(text)) suggestions = ['Ок 👌','Хорошо','Понял','Договорились'];
+    else if (/\?$|как|что|где|когда|почему/.test(text)) suggestions = ['Сейчас посмотрю','Скоро отвечу','Интересный вопрос'];
+    else if (/да|конечно|соглас/.test(text)) suggestions = ['Да','Конечно','Согласен'];
+    else if (/нет|не/.test(text)) suggestions = ['Нет','Не сейчас','Не могу'];
     sr.innerHTML = suggestions.slice(0, 4).map(s => `<button class="smart-reply-btn">${escapeHtml(s)}</button>`).join('');
     sr.style.display = 'flex';
     sr.querySelectorAll('.smart-reply-btn').forEach(b => b.addEventListener('click', () => {
@@ -1972,11 +2037,11 @@ if (sendCommentBtn) {
     });
 }
 
-/* ============ ПОДАРКИ (LOGIC) ============ */
+/* ============ ПОДАРКИ ============ */
 function renderGifts() {
     const grid = document.getElementById('giftsGrid');
     if (!grid) return;
-    const ba = document.getElementById('balanceAmount'); if (ba) ba.textContent = state.balance;
+    const ba = document.getElementById('balanceAmount'); if (ba) ba.textContent = '∞';
     const oc = document.getElementById('ownedCount'); if (oc) oc.textContent = state.ownedGifts.length;
     if (state.giftTab === 'owned') {
         if (!state.ownedGifts.length) {
@@ -1987,7 +2052,6 @@ function renderGifts() {
             <div class="gift-item rarity-${g.rarity}" style="cursor: default;">
                 <img src="${g.img}" alt="${g.name}" style="width:64px;height:64px;object-fit:contain;">
                 <div class="g-name">${escapeHtml(g.name)}</div>
-                <div class="g-collection">${escapeHtml(g.collection)}</div>
                 <div class="g-rarity rarity-${g.rarity}">${rarityLabel[g.rarity]}</div>
                 <div class="g-price">💎 ${g.price}</div>
                 <div class="g-owned" style="background: var(--emerald);">#${g.number}</div>
@@ -1998,7 +2062,6 @@ function renderGifts() {
         <div class="gift-item rarity-${g.rarity}" data-gift-id="${g.id}">
             <img src="${g.img}" alt="${g.name}" style="width:64px;height:64px;object-fit:contain;margin-bottom:8px;">
             <div class="g-name">${escapeHtml(g.name)}</div>
-            <div class="g-collection">${escapeHtml(g.collection)}</div>
             <div class="g-rarity rarity-${g.rarity}">${rarityLabel[g.rarity]}</div>
             <div class="g-price">💎 ${g.price}</div>
         </div>`).join('');
@@ -2023,27 +2086,25 @@ if (topupBtn) topupBtn.addEventListener('click', () => { sound.play('click'); op
 document.querySelectorAll('.topup-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         const amount = parseInt(btn.dataset.amount);
-        state.balance += amount;
+        // state.balance += amount; // Больше не нужно, баланс бесконечный
         saveToStorage();
-        const ba = document.getElementById('balanceAmount'); if (ba) ba.textContent = state.balance;
-        const mb = document.getElementById('modalBalance'); if (mb) mb.textContent = state.balance + ' 💎';
+        const ba = document.getElementById('balanceAmount'); if (ba) ba.textContent = '∞';
+        const mb = document.getElementById('modalBalance'); if (mb) mb.textContent = '∞';
         sound.play('success');
         showNotif('Изумруды пополнены', `+${amount} 💎`);
         closeModal('topupModal');
     });
 });
 function openSendGiftModal(gift) {
-    if (state.balance < gift.price) {
-        sound.play('error'); showNotif('Недостаточно изумрудов', `Нужно ещё ${gift.price - state.balance} 💎`); return;
-    }
+    // if (state.balance < gift.price) { ... } // Больше не нужно
     state.pendingGift = gift;
     const recipientConv = state.convs.find(c => c.id === state.activeConv);
     state.giftRecipientConv = recipientConv;
     const preview = document.getElementById('giftPreview');
-    if (preview) preview.innerHTML = `<img src="${gift.img}" alt="${gift.name}" style="width:100px;height:100px;object-fit:contain;"><div class="gp-name">${escapeHtml(gift.name)}</div><div class="gp-collection">${escapeHtml(gift.collection)}</div><div class="gp-rarity rarity-${gift.rarity}">${rarityLabel[gift.rarity]}</div><div class="gp-price">💎 ${gift.price}</div>`;
+    if (preview) preview.innerHTML = `<img src="${gift.img}" alt="${gift.name}" style="width:100px;height:100px;object-fit:contain;"><div class="gp-name">${escapeHtml(gift.name)}</div><div class="gp-rarity rarity-${gift.rarity}">${rarityLabel[gift.rarity]}</div><div class="gp-price">💎 ${gift.price}</div>`;
     const gr = document.getElementById('giftRecipient'); if (gr) gr.value = recipientConv ? recipientConv.name : 'Выберите чат';
     const gm = document.getElementById('giftMessage'); if (gm) gm.value = '';
-    const mb = document.getElementById('modalBalance'); if (mb) mb.textContent = state.balance + ' 💎';
+    const mb = document.getElementById('modalBalance'); if (mb) mb.textContent = '∞';
     openModal('sendGiftModal');
 }
 const sendGiftFromChatBtn = document.getElementById('sendGiftFromChatBtn');
@@ -2061,8 +2122,7 @@ if (confirmSendGiftBtn) {
         const gift = state.pendingGift, conv = state.giftRecipientConv;
         if (!gift) return;
         if (!conv) { sound.play('error'); showNotif('Ошибка', 'Откройте чат'); return; }
-        if (state.balance < gift.price) { sound.play('error'); showNotif('Недостаточно изумрудов', 'Пополните баланс'); return; }
-        state.balance -= gift.price;
+        // state.balance -= gift.price; // Больше не нужно
         const giftNumber = Math.floor(Math.random() * 9000) + 1000;
         const gm = document.getElementById('giftMessage');
         const giftMessage = gm ? gm.value.trim() : '';
@@ -2072,7 +2132,7 @@ if (confirmSendGiftBtn) {
         state.ownedGifts.push({ ...giftData, receivedAt: Date.now(), from: conv.name });
         state.userProfileGifts.push({ ...giftData, from: conv.name, receivedAt: Date.now() });
         saveToStorage();
-        const ba = document.getElementById('balanceAmount'); if (ba) ba.textContent = state.balance;
+        const ba = document.getElementById('balanceAmount'); if (ba) ba.textContent = '∞';
         const sg = document.getElementById('statGifts'); if (sg) sg.textContent = state.userProfileGifts.length;
         if (gift.rarity === 'legend') { sound.play('legend'); showNotif('🎉 Легендарный подарок!', `${gift.name} → ${conv.name}`, '', true); }
         else { sound.play('gift'); showNotif('Подарок отправлен', `${gift.name} → ${conv.name}`, '', true); }
@@ -2087,7 +2147,7 @@ function renderProfileGifts() {
     const container = document.getElementById('profileGifts');
     if (!container) return;
     const sg = document.getElementById('statGifts'); if (sg) sg.textContent = state.userProfileGifts.length;
-    const pb = document.getElementById('profileBalance'); if (pb) pb.textContent = state.balance;
+    const pb = document.getElementById('profileBalance'); if (pb) pb.textContent = '∞';
     if (!state.userProfileGifts.length) {
         container.innerHTML = '<div style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 20px; grid-column: 1/-1;">Пока нет подарков</div>';
         return;
@@ -2154,7 +2214,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderPosts();
     renderPinPad();
     updatePinDots();
-    renderEmojiPicker();
+    renderSavedAccounts();
     document.addEventListener('click', () => { state.lastActivity = Date.now(); });
     document.addEventListener('keydown', () => { state.lastActivity = Date.now(); });
 });
