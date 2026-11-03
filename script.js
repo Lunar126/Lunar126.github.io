@@ -387,13 +387,11 @@ function enterApp() {
     loadFromStorage();
     updateProfileUI();
     
-    // Скрываем авторизацию, показываем приложение
     const auth = document.getElementById('authScreen');
     if (auth) auth.classList.add('hidden');
     const app = document.getElementById('app');
     if (app) app.classList.add('visible');
 
-    // Пытаемся отрендерить всё, но оборачиваем в try/catch, чтобы не сломать вход
     try { renderConvList(); } catch(e) { console.warn('renderConvList error', e); }
     try { applyEmojiToStatic(); } catch(e) {}
     try { renderGifts(); } catch(e) { console.warn('renderGifts error', e); }
