@@ -50,7 +50,7 @@ function toggleTheme() {
     state.themeMode = state.themeMode === 'light' ? 'dark' : 'light';
     localStorage.setItem('lunar_theme_mode', state.themeMode);
     applyTheme();
-    if (document.getElementById('themeModal').classList.contains('active')) renderThemeGrid();
+    if (document.getElementById('themeModal')?.classList.contains('active')) renderThemeGrid();
     sound.play('click');
 }
 
@@ -76,12 +76,9 @@ class SoundEngine {
             click: [{f:1200, d:.05, t:'sine', v:.15}],
             like: [{f:523, f2:1046, d:.2, t:'sine', v:.2}],
             error: [{f:200, f2:120, d:.15, t:'sawtooth', v:.15}],
-            notif: this.notifSound === 'chime' ? [{f:523, d:.15, t:'sine', v:.2},{f:659, d:.15, t:'sine', v:.2, delay:.1},{f:784, d:.3, t:'sine', v:.25, delay:.2}] : this.notifSound === 'bell' ? [{f:880, f2:1760, d:.4, t:'sine', v:.25}] : [{f:1046, f2:1568, d:.3, t:'sine', v:.25}],
+            notif: [{f:1046, f2:1568, d:.3, t:'sine', v:.25}],
             success: [{f:523, d:.12, t:'sine', v:.2},{f:659, d:.12, t:'sine', v:.2, delay:.12},{f:784, d:.12, t:'sine', v:.2, delay:.24},{f:1046, d:.4, t:'sine', v:.25, delay:.36}],
-            photo: [{f:784, d:.1, t:'sine', v:.15},{f:1046, d:.15, t:'sine', v:.2, delay:.1}],
-            voice: [{f:440, d:.15, t:'sine', v:.2},{f:660, d:.15, t:'sine', v:.2, delay:.1}],
-            gift: [{f:523, f2:784, d:.15, t:'sine', v:.2},{f:784, f2:1046, d:.2, t:'sine', v:.2, delay:.12},{f:1046, f2:1568, d:.25, t:'sine', v:.25, delay:.24}],
-            legend: [{f:523, f2:659, d:.2, t:'sine', v:.25},{f:659, f2:784, d:.2, t:'sine', v:.25, delay:.15},{f:784, f2:1046, d:.2, t:'sine', v:.3, delay:.3},{f:1046, f2:1318, d:.4, t:'sine', v:.3, delay:.45}]
+            photo: [{f:784, d:.1, t:'sine', v:.15},{f:1046, d:.15, t:'sine', v:.2, delay:.1}]
         };
         const list = tones[type] || tones.click;
         list.forEach((tone, i) => {
@@ -110,7 +107,6 @@ const stickers = ['😀','😂','😍','🥰','😎','🤩','🥳','😏','😴'
 const emojiCategories = {
     'Часто': ['😀','😂','🥰','😎','🔥','👍','❤️','✨','🎉','💯'],
     'Смайлы': ['😀','😃','😄','😁','😆','😅','😂','🤣','🥲','😊','😇','🙂','🙃','😉','😌','😍','🥰','😘','😗','😙','😚','😋','😛','😝','😜','🤪','🤨','🧐','🤓','😎','🥸','🤩','🥳','😏','😒','😞','😔','😟','😕','🙁','☹️','😣','😖','😫','😩','🥺','😢','😭','😤','😠','😡','🤬','🤯','😳','🥵','🥶','😱','😨','😰','😥','😓','🤗','🤔','🤭','🤫','🤥','😶','😐','😑','😬','🙄','😯','😦','😧','😮','😲','🥱','😴','🤤','😪','😵','🤐','🥴','🤢','🤮','🤧','😷','🤒','🤕'],
-    'Жесты': ['👍','👎','👌','✌️','🤞','🤟','🤘','🤙','👈','👉','👆','👇','☝️','✋','🤚','🖐','🖖','👋','🤝','🙏','💪','🦾','🖕','✍️','🤳','💅','🦵','🦶','👂','🦻','👃','🫀','🫁','🧠','🦷','🦴','👀','👁','👅','👄'],
     'Животные': ['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🐷','🐸','🐵','🙈','🙉','🙊','🐒','🐔','🐧','🐦','🐤','🦆','🦅','🦉','🦇','🐺','🐗','🐴','🦄','🐝','🦋','🐌','🐞','🐜','🦟','🦗','🕷','🦂','🐢','🐍','🦎','🦖','🦕','🐙','🦑','🦐','🦞','🦀','🐡','🐠','🐟','🐬','🐳','🐋','🦈','🐊','🐅','🐆','🦓','🦍','🦧','🐘','🦛','🦏','🐪','🐫','🦒','🦘','🐃','🐂','🐄','🐎','🐖','🐏','🐑','🦙','🐐','🦌','🐕','🐩','🦮','🐈','🐓','🦃','🦚','🦜','🦢','🦩','🕊','🐇','🦝','🦨','🦡','🦦','🦥','🐁','🐀','🐿','🦔'],
     'Еда': ['🍎','🍐','🍊','🍋','🍌','🍉','🍇','🍓','🫐','🍈','🍒','🍑','🥭','🍍','🥥','🥝','🍅','🍆','🥑','🥦','🥬','🥒','🌶','🫑','🌽','🥕','🫒','🧄','🧅','🥔','🍠','🥐','🥯','🍞','🥖','🥨','🧀','🥚','🍳','🧈','🥞','🧇','🥓','🥩','🍗','🍖','🦴','🌭','🍔','🍟','🍕','🫓','🥪','🥙','🧆','🌮','🌯','🫔','🥗','🥘','🫕','🥫','🍝','🍜','🍲','🍛','🍣','🍱','🥟','🦪','🍤','🍙','🍚','🍘','🍥','🥠','🥮','🍢','🍡','🍧','🍨','🍦','🥧','🧁','🍰','🎂','🍮','🍭','🍬','🍫','🍿','🍩','🍪','🌰','🥜','🍯','🥛','🍼','☕','🫖','🍵','🧃','🥤','🧋','🍶','🍺','🍻','🥂','🍷','🥃','🍸','🍹','🧉','🍾'],
     'Символы': ['❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💔','❣️','💕','💞','💓','💗','💖','💘','💝','💟','☮️','✝️','☪️','🕉','☸️','✡️','🔯','🕎','☯️','☦️','🛐','⛎','♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓','🆔','⚛️','🉑','☢️','☣️','📴','📳','🈶','🈚','🈸','🈺','🈷️','✴️','🆚','💮','🉐','㊙️','㊗️','🈴','🈵','🈹','🈲','🅰️','🅱️','🆎','🆑','🅾️','🆘','❌','⭕','🛑','⛔','📛','🚫','💯','💢','♨️','🚷','🚯','🚳','🚱','🔞','📵','🚭','❗','❕','❓','❔','‼️','⁉️','🔅','🔆','〽️','⚠️','🚸','🔱','⚜️','🔰','♻️','✅','🈯','💹','❇️','✳️','❎','🌐','💠','Ⓜ️','🌀','💤','🏧','🚾','♿','🅿️','🛗','🈳','🈂️','🛂','🛃','🛄','🛅','🚹','🚺','🚼','⚧','🚻','🚮','🎦','📶','🈁','🔣','ℹ️','🔤','🔡','🔠','🆖','🆗','🆙','🆒','🆕','🆓','0️⃣','1️⃣','2️⃣','3️⃣','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟','🔢','#️⃣','*️⃣','⏏️','▶️','⏸','⏯','⏹','⏺','⏭','⏮','⏩','⏪','⏫','⏬','◀️','🔼','🔽','➡️','⬅️','⬆️','⬇️','↗️','↘️','↙️','↖️','↕️','↔️','↩️','↪️','⤴️','⤵️','🔀','🔁','🔂','🔄','🔃','🎵','🎶','➕','➖','➗','✖️','🟰','♾️','💲','💱','™️','©️','®️','👁️‍🗨️','🔚','🔙','🔛','🔝','🔜','〰️','➰','➿','✔️','☑️','🔘','🔴','🟠','🟡','🟢','🔵','🟣','⚫','⚪','🟤','🔺','🔻','🔸','🔹','🔶','🔷','🔳','🔲','▪️','▫️','◾','◽','◼️','◻️','🟥','🟧','🟨','🟩','🟦','🟪','⬛','⬜','🟫','🔈','🔇','🔉','🔊','🔔','🔕','📣','📢','💬','💭','🗯','♠️','♣️','♥️','♦️','🃏','🎴','🀄','🕐','🕑','🕒','🕓','🕔','🕕','🕖','🕗','🕘','🕙','🕚','🕛']
@@ -125,8 +121,7 @@ const smartReplyPool = {
     default: ['👍','Ок','Спасибо','Понял','Хорошо']
 };
 
-/* ============ ПОДАРКИ ИЗ TELEGRAM ============ */
-// Оригинальные ID и прямые ссылки на высококачественные PNG
+/* ============ ПОДАРКИ ============ */
 const giftCatalog = [
     { id: '5170145012310081615', name: 'Сердечко', collection: 'Telegram', rarity: 'common', price: 15, img: 'https://api.changes.tg/original/5170145012310081615.png?size=512' },
     { id: '5170233102089322756', name: 'Мишка', collection: 'Telegram', rarity: 'common', price: 20, img: 'https://api.changes.tg/original/5170233102089322756.png?size=512' },
@@ -154,16 +149,9 @@ const state = {
     notifMode: 'all',
     pin: null, pinAutolock: 0, pinInput: '',
     lastActivity: Date.now(),
-    accounts: [],
-    drafts: {},
-    chatWallpapers: {},
-    smartRepliesTimeout: null,
-    editingMsg: null,
-    forwardMsg: null,
-    activeCommentPost: null,
-    recording: null,
-    recordStart: 0, recordTimer: null,
-    voiceBlob: null,
+    accounts: [], drafts: {}, chatWallpapers: {},
+    editingMsg: null, forwardMsg: null, activeCommentPost: null,
+    recording: null, recordStart: 0, recordTimer: null, voiceBlob: null,
     balance: 500, ownedGifts: [], giftTab: 'catalog', userProfileGifts: [],
     pendingGift: null, giftRecipientConv: null,
     profile: { nickname: '', bio: '', avatarType: 'emoji', avatarEmoji: '😎', avatarColor: 0, avatarPhoto: null, avatarPhotoName: '', avatarPhotoSize: 0, banner: 'default', frame: 'none' },
@@ -211,6 +199,7 @@ function formatFileSize(b) { if (b < 1024) return b + ' B'; if (b < 1048576) ret
 /* ============ PIN ============ */
 function renderPinPad() {
     const pad = document.getElementById('pinPad');
+    if (!pad) return;
     pad.innerHTML = '';
     const layout = ['1','2','3','4','5','6','7','8','9','','0','←'];
     layout.forEach(k => {
@@ -223,6 +212,7 @@ function renderPinPad() {
 }
 function updatePinDots() {
     const dots = document.getElementById('pinDots');
+    if (!dots) return;
     const len = state.pin ? state.pin.length : 4;
     dots.innerHTML = '';
     for (let i = 0; i < len; i++) {
@@ -238,12 +228,12 @@ function handlePinKey(k) {
     updatePinDots();
     if (state.pinInput.length === state.pin.length) {
         if (state.pinInput === state.pin) {
-            document.getElementById('pinError').textContent = '';
-            document.getElementById('pinScreen').style.display = 'none';
+            const err = document.getElementById('pinError'); if (err) err.textContent = '';
+            const screen = document.getElementById('pinScreen'); if (screen) screen.style.display = 'none';
             state.pinInput = '';
             state.lastActivity = Date.now();
         } else {
-            document.getElementById('pinError').textContent = 'Неверный PIN';
+            const err = document.getElementById('pinError'); if (err) err.textContent = 'Неверный PIN';
             state.pinInput = '';
             setTimeout(updatePinDots, 300);
             sound.play('error');
@@ -259,7 +249,7 @@ function checkAutoLock() {
 function lockApp() {
     state.pinInput = '';
     updatePinDots();
-    document.getElementById('pinScreen').style.display = 'flex';
+    const screen = document.getElementById('pinScreen'); if (screen) screen.style.display = 'flex';
 }
 
 /* ============ AUTH ============ */
@@ -269,131 +259,163 @@ document.querySelectorAll('.auth-switcher button').forEach(btn => {
         document.querySelectorAll('.auth-switcher button').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         document.querySelectorAll('.auth-step').forEach(s => s.classList.remove('active'));
-        document.getElementById(btn.dataset.mode === 'login' ? 'authLogin' : 'authRegister').classList.add('active');
+        const target = document.getElementById(btn.dataset.mode === 'login' ? 'authLogin' : 'authRegister');
+        if (target) target.classList.add('active');
     });
 });
 document.querySelectorAll('.toggle-pass').forEach(btn => {
     btn.addEventListener('click', () => {
         const input = document.getElementById(btn.dataset.target);
-        input.type = input.type === 'password' ? 'text' : 'password';
+        if (input) input.type = input.type === 'password' ? 'text' : 'password';
     });
 });
-document.getElementById('regPassword').addEventListener('input', (e) => {
-    const s = getPasswordStrength(e.target.value);
-    document.getElementById('pwdStrength').dataset.strength = s;
-    const h = document.getElementById('pwdHint');
-    if (!e.target.value) h.classList.remove('visible');
-    else { h.classList.add('visible'); h.textContent = e.target.value.length < 6 ? 'Минимум 6 символов' : s <= 1 ? 'Слабый' : s === 2 ? 'Средний' : s === 3 ? 'Хороший' : 'Отличный 💪'; }
-});
-document.getElementById('registerBtn').addEventListener('click', () => {
-    const login = document.getElementById('regUsername').value.trim().toLowerCase();
-    const pwd = document.getElementById('regPassword').value;
-    const pwd2 = document.getElementById('regPassword2').value;
-    hideMsg('registerError');
-    const lErr = validateLogin(login); if (lErr) { showMsg('registerError', lErr); sound.play('error'); return; }
-    const pErr = validatePassword(pwd); if (pErr) { showMsg('registerError', pErr); sound.play('error'); return; }
-    if (pwd !== pwd2) { showMsg('registerError', 'Пароли не совпадают'); sound.play('error'); return; }
-    const users = getUsers();
-    if (users[login]) { showMsg('registerError', 'Логин занят'); sound.play('error'); return; }
-    const btn = document.getElementById('registerBtn');
-    btn.classList.add('loading'); btn.innerHTML = '<div class="spinner"></div>Создание...';
-    setTimeout(() => {
-        const nickname = login.charAt(0).toUpperCase() + login.slice(1);
-        const isFirst = Object.keys(users).length === 0;
-        users[login] = { login, nickname, passwordHash: hashPassword(pwd), role: isFirst ? 'creator' : 'user', createdAt: Date.now(), lastLogin: Date.now(), profile: { nickname, bio: '', avatarType: 'emoji', avatarEmoji: '😎', avatarColor: 0, avatarPhoto: null, avatarPhotoName: '', avatarPhotoSize: 0, banner: 'default', frame: 'none' } };
-        saveUsers(users);
-        state.user = nickname; state.login = login; state.role = users[login].role;
-        state.profile = { ...users[login].profile };
-        try { localStorage.setItem('lunar_session', JSON.stringify({ login, nickname, loginAt: Date.now() })); } catch(e) {}
-        sound.play('success');
-        showNotif(isFirst ? '👑 Creator создан!' : 'Аккаунт создан', nickname);
-        setTimeout(enterApp, 500);
-    }, 700);
-});
-document.getElementById('loginBtn').addEventListener('click', () => {
-    const login = document.getElementById('loginUsername').value.trim().toLowerCase();
-    const pwd = document.getElementById('loginPassword').value;
-    hideMsg('loginError');
-    if (!login || !pwd) { showMsg('loginError', 'Введите логин и пароль'); sound.play('error'); return; }
-    const users = getUsers();
-    const user = users[login];
-    if (!user || user.passwordHash !== hashPassword(pwd)) { showMsg('loginError', 'Неверные данные'); sound.play('error'); return; }
-    const btn = document.getElementById('loginBtn');
-    btn.classList.add('loading'); btn.innerHTML = '<div class="spinner"></div>Вход...';
-    setTimeout(() => {
-        user.lastLogin = Date.now(); saveUsers(users);
-        state.user = user.nickname; state.login = login; state.role = user.role || 'user';
-        state.profile = user.profile || { nickname: user.nickname, bio: '', avatarType: 'emoji', avatarEmoji: '😎', avatarColor: 0, avatarPhoto: null, avatarPhotoName: '', avatarPhotoSize: 0, banner: 'default', frame: 'none' };
-        if (document.getElementById('rememberMe').checked) {
-            try { localStorage.setItem('lunar_session', JSON.stringify({ login, nickname: user.nickname, loginAt: Date.now() })); } catch(e) {}
-        }
-        sound.play('success');
-        showNotif('С возвращением!', user.nickname);
-        setTimeout(enterApp, 400);
-    }, 700);
-});
+const regPasswordInput = document.getElementById('regPassword');
+if (regPasswordInput) {
+    regPasswordInput.addEventListener('input', (e) => {
+        const s = getPasswordStrength(e.target.value);
+        const ps = document.getElementById('pwdStrength'); if (ps) ps.dataset.strength = s;
+        const h = document.getElementById('pwdHint');
+        if (!h) return;
+        if (!e.target.value) h.classList.remove('visible');
+        else { h.classList.add('visible'); h.textContent = e.target.value.length < 6 ? 'Минимум 6 символов' : s <= 1 ? 'Слабый' : s === 2 ? 'Средний' : s === 3 ? 'Хороший' : 'Отличный 💪'; }
+    });
+}
+
+const registerBtn = document.getElementById('registerBtn');
+if (registerBtn) {
+    registerBtn.addEventListener('click', () => {
+        const login = document.getElementById('regUsername').value.trim().toLowerCase();
+        const pwd = document.getElementById('regPassword').value;
+        const pwd2 = document.getElementById('regPassword2').value;
+        hideMsg('registerError');
+        const lErr = validateLogin(login); if (lErr) { showMsg('registerError', lErr); sound.play('error'); return; }
+        const pErr = validatePassword(pwd); if (pErr) { showMsg('registerError', pErr); sound.play('error'); return; }
+        if (pwd !== pwd2) { showMsg('registerError', 'Пароли не совпадают'); sound.play('error'); return; }
+        const users = getUsers();
+        if (users[login]) { showMsg('registerError', 'Логин занят'); sound.play('error'); return; }
+        const btn = document.getElementById('registerBtn');
+        btn.classList.add('loading'); btn.innerHTML = '<div class="spinner"></div>Создание...';
+        setTimeout(() => {
+            const nickname = login.charAt(0).toUpperCase() + login.slice(1);
+            const isFirst = Object.keys(users).length === 0;
+            users[login] = { login, nickname, passwordHash: hashPassword(pwd), role: isFirst ? 'creator' : 'user', createdAt: Date.now(), lastLogin: Date.now(), profile: { nickname, bio: '', avatarType: 'emoji', avatarEmoji: '😎', avatarColor: 0, avatarPhoto: null, avatarPhotoName: '', avatarPhotoSize: 0, banner: 'default', frame: 'none' } };
+            saveUsers(users);
+            state.user = nickname; state.login = login; state.role = users[login].role;
+            state.profile = { ...users[login].profile };
+            try { localStorage.setItem('lunar_session', JSON.stringify({ login, nickname, loginAt: Date.now() })); } catch(e) {}
+            sound.play('success');
+            showNotif(isFirst ? '👑 Creator создан!' : 'Аккаунт создан', nickname);
+            enterApp();
+        }, 700);
+    });
+}
+
+const loginBtn = document.getElementById('loginBtn');
+if (loginBtn) {
+    loginBtn.addEventListener('click', () => {
+        const login = document.getElementById('loginUsername').value.trim().toLowerCase();
+        const pwd = document.getElementById('loginPassword').value;
+        hideMsg('loginError');
+        if (!login || !pwd) { showMsg('loginError', 'Введите логин и пароль'); sound.play('error'); return; }
+        const users = getUsers();
+        const user = users[login];
+        if (!user || user.passwordHash !== hashPassword(pwd)) { showMsg('loginError', 'Неверные данные'); sound.play('error'); return; }
+        const btn = document.getElementById('loginBtn');
+        btn.classList.add('loading'); btn.innerHTML = '<div class="spinner"></div>Вход...';
+        setTimeout(() => {
+            user.lastLogin = Date.now(); saveUsers(users);
+            state.user = user.nickname; state.login = login; state.role = user.role || 'user';
+            state.profile = user.profile || { nickname: user.nickname, bio: '', avatarType: 'emoji', avatarEmoji: '😎', avatarColor: 0, avatarPhoto: null, avatarPhotoName: '', avatarPhotoSize: 0, banner: 'default', frame: 'none' };
+            if (document.getElementById('rememberMe')?.checked) {
+                try { localStorage.setItem('lunar_session', JSON.stringify({ login, nickname: user.nickname, loginAt: Date.now() })); } catch(e) {}
+            }
+            sound.play('success');
+            showNotif('С возвращением!', user.nickname);
+            enterApp();
+        }, 700);
+    });
+}
 
 /* ============ AVATAR ============ */
 function getAvatarContent() {
     const p = state.profile;
     if (p.avatarType === 'photo' && p.avatarPhoto) return `<img class="avatar-photo" src="${p.avatarPhoto}" alt="">`;
     if (p.avatarType === 'emoji') return `<div class="avatar-emoji-wrap">${emojiImg(p.avatarEmoji)}</div>`;
-    return p.nickname.charAt(0).toUpperCase();
+    return (p.nickname || 'U').charAt(0).toUpperCase();
 }
 function getFrameClass() { const f = frames.find(fr => fr.id === state.profile.frame); return f ? f.class : 'avatar-frame-none'; }
 function getBannerStyle() { const b = banners.find(bn => bn.id === state.profile.banner); return b ? b.css : banners[0].css; }
 function updateProfileUI() {
     const p = state.profile;
     const ua = document.getElementById('userAvatar');
-    ua.innerHTML = getAvatarContent();
-    if (p.avatarType === 'photo' && p.avatarPhoto) ua.style.background = 'var(--bg-tertiary)';
-    else if (p.avatarType === 'color') { const c = avatarColors[p.avatarColor]; ua.style.background = `linear-gradient(135deg,${c[0]},${c[1]})`; }
-    else ua.style.background = 'linear-gradient(135deg,var(--accent),var(--blue))';
-    ua.classList.toggle('creator', state.role === 'creator' || state.role === 'developer');
+    if (ua) {
+        ua.innerHTML = getAvatarContent();
+        if (p.avatarType === 'photo' && p.avatarPhoto) ua.style.background = 'var(--bg-tertiary)';
+        else if (p.avatarType === 'color') { const c = avatarColors[p.avatarColor]; ua.style.background = `linear-gradient(135deg,${c[0]},${c[1]})`; }
+        else ua.style.background = 'linear-gradient(135deg,var(--accent),var(--blue))';
+        ua.classList.toggle('creator', state.role === 'creator' || state.role === 'developer');
+    }
     const pa = document.getElementById('profileAvatar');
-    pa.innerHTML = getAvatarContent();
-    if (p.avatarType === 'photo' && p.avatarPhoto) pa.style.background = 'var(--bg-tertiary)';
-    else if (p.avatarType === 'color') { const c = avatarColors[p.avatarColor]; pa.style.background = `linear-gradient(135deg,${c[0]},${c[1]})`; }
-    else pa.style.background = 'linear-gradient(135deg,var(--accent),var(--blue))';
-    pa.className = 'profile-avatar-large ' + getFrameClass();
-    document.getElementById('profileName').textContent = p.nickname;
+    if (pa) {
+        pa.innerHTML = getAvatarContent();
+        if (p.avatarType === 'photo' && p.avatarPhoto) pa.style.background = 'var(--bg-tertiary)';
+        else if (p.avatarType === 'color') { const c = avatarColors[p.avatarColor]; pa.style.background = `linear-gradient(135deg,${c[0]},${c[1]})`; }
+        else pa.style.background = 'linear-gradient(135deg,var(--accent),var(--blue))';
+        pa.className = 'profile-avatar-large ' + getFrameClass();
+    }
+    const pn = document.getElementById('profileName'); if (pn) pn.textContent = p.nickname;
     const badge = document.getElementById('profileCreatorBadge');
     if (badge) badge.style.display = (state.role === 'creator' || state.role === 'developer') ? 'inline-flex' : 'none';
     const devBtn = document.getElementById('developersBtn');
     if (devBtn) devBtn.style.display = isCreator() ? 'flex' : 'none';
     const bioEl = document.getElementById('profileBio');
-    if (p.bio) { bioEl.textContent = p.bio; bioEl.classList.remove('empty'); } else bioEl.classList.add('empty');
-    document.getElementById('profileLogin').textContent = '@' + state.login;
-    document.getElementById('profileBanner').style.background = getBannerStyle();
-    document.getElementById('statMessages').textContent = state.totalMessages;
-    document.getElementById('statChats').textContent = state.convs.length;
-    document.getElementById('statPosts').textContent = state.totalPosts;
-    document.getElementById('balanceAmount').textContent = state.balance;
+    if (bioEl) {
+        if (p.bio) { bioEl.textContent = p.bio; bioEl.classList.remove('empty'); } else bioEl.classList.add('empty');
+    }
+    const pl = document.getElementById('profileLogin'); if (pl) pl.textContent = '@' + state.login;
+    const pb = document.getElementById('profileBanner'); if (pb) pb.style.background = getBannerStyle();
+    const sm = document.getElementById('statMessages'); if (sm) sm.textContent = state.totalMessages;
+    const sc = document.getElementById('statChats'); if (sc) sc.textContent = state.convs.length;
+    const sp = document.getElementById('statPosts'); if (sp) sp.textContent = state.totalPosts;
+    const ba = document.getElementById('balanceAmount'); if (ba) ba.textContent = state.balance;
+    const pba = document.getElementById('profileBalance'); if (pba) pba.textContent = state.balance;
     const rBtn = document.getElementById('quickRemovePhotoBtn');
     if (rBtn) rBtn.style.display = (p.avatarType === 'photo' && p.avatarPhoto) ? 'flex' : 'none';
 }
+
 function enterApp() {
     loadFromStorage();
     updateProfileUI();
-    document.getElementById('authScreen').classList.add('hidden');
-    document.getElementById('app').classList.add('visible');
-    renderConvList();
-    applyEmojiToStatic();
     
-    // Безопасный вызов функций, которые могут зависеть от HTML-элементов
-    if (document.getElementById('giftsGrid')) renderGifts();
-    if (document.getElementById('profileGifts')) renderProfileGifts();
+    // Скрываем авторизацию, показываем приложение
+    const auth = document.getElementById('authScreen');
+    if (auth) auth.classList.add('hidden');
+    const app = document.getElementById('app');
+    if (app) app.classList.add('visible');
+
+    // Пытаемся отрендерить всё, но оборачиваем в try/catch, чтобы не сломать вход
+    try { renderConvList(); } catch(e) { console.warn('renderConvList error', e); }
+    try { applyEmojiToStatic(); } catch(e) {}
+    try { renderGifts(); } catch(e) { console.warn('renderGifts error', e); }
+    try { renderProfileGifts(); } catch(e) { console.warn('renderProfileGifts error', e); }
     
-    document.getElementById('onlineCount').textContent = Math.max(1, state.convs.filter(c => c.type === 'group').length + 1);
+    const oc = document.getElementById('onlineCount');
+    if (oc) oc.textContent = Math.max(1, state.convs.filter(c => c.type === 'group').length + 1);
+    
     saveToStorage();
     if (state.pin) lockApp();
     requestNotificationPermission();
 }
-document.getElementById('logoutBtn').addEventListener('click', () => {
-    if (!confirm('Выйти?')) return;
-    try { localStorage.removeItem('lunar_session'); } catch(e) {}
-    location.reload();
-});
+
+const logoutBtn = document.getElementById('logoutBtn');
+if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
+        if (!confirm('Выйти?')) return;
+        try { localStorage.removeItem('lunar_session'); } catch(e) {}
+        location.reload();
+    });
+}
+
 (function checkSession() {
     try {
         const s = JSON.parse(localStorage.getItem('lunar_session') || 'null');
@@ -486,13 +508,14 @@ function updateTitle() {
 /* ============ CONV LIST ============ */
 function renderConvList() {
     const container = document.getElementById('convItems');
+    if (!container) return;
     const archived = state.convs.filter(c => c.archived);
     const active = state.convs.filter(c => !c.archived);
     const totalUnread = active.reduce((s, c) => s + (c.unread || 0), 0);
     const uB = document.getElementById('chatsBadge'), uC = document.getElementById('unreadCount'), aC = document.getElementById('archiveCount');
-    if (totalUnread > 0) { uB.style.display = ''; uB.textContent = totalUnread > 99 ? '99+' : totalUnread; uC.style.display = ''; uC.textContent = totalUnread; }
-    else { uB.style.display = 'none'; uC.style.display = 'none'; }
-    if (archived.length > 0) { aC.style.display = ''; aC.textContent = archived.length; } else aC.style.display = 'none';
+    if (uB) { if (totalUnread > 0) { uB.style.display = ''; uB.textContent = totalUnread > 99 ? '99+' : totalUnread; } else uB.style.display = 'none'; }
+    if (uC) { if (totalUnread > 0) { uC.style.display = ''; uC.textContent = totalUnread; } else uC.style.display = 'none'; }
+    if (aC) { if (archived.length > 0) { aC.style.display = ''; aC.textContent = archived.length; } else aC.style.display = 'none'; }
     updateTitle();
     if (state.filter === 'archive') {
         if (!archived.length) {
@@ -564,52 +587,73 @@ function openConv(id) {
     const conv = state.convs.find(c => c.id === id);
     if (!conv) return;
     const curInput = document.getElementById('messageInput');
-    if (state.activeConv && curInput.value.trim()) state.drafts[state.activeConv] = curInput.value;
+    if (state.activeConv && curInput && curInput.value.trim()) state.drafts[state.activeConv] = curInput.value;
     state.activeConv = id;
     conv.unread = 0;
     state.replyTo = null;
     state.editingMsg = null;
-    document.getElementById('replyBar').classList.remove('active');
-    document.getElementById('emptyChat').style.display = 'none';
-    document.getElementById('activeChat').style.display = 'flex';
+    
+    const rb = document.getElementById('replyBar'); if (rb) rb.classList.remove('active');
+    const ec = document.getElementById('emptyChat'); if (ec) ec.style.display = 'none';
+    const ac = document.getElementById('activeChat'); if (ac) ac.style.display = 'flex';
+    
     const avatar = document.getElementById('chatHeaderAvatar');
-    avatar.textContent = initials(conv.name);
-    avatar.style.background = conv.color ? `linear-gradient(135deg,${conv.color[0]},${conv.color[1]})` : '';
-    const tag = conv.type === 'channel' ? '<span class="channel-tag">канал</span>' : conv.type === 'dm' ? '' : '<span class="group-tag">группа</span>';
-    document.getElementById('chatHeaderName').innerHTML = escapeHtml(conv.name) + ' ' + tag + (conv.archived ? ' 📦' : '');
-    const mc = conv.members ? conv.members.length : 1;
-    document.getElementById('chatHeaderStatus').textContent = conv.description || (conv.type === 'channel' ? mc + ' подписчиков' : mc + ' участников');
+    if (avatar) {
+        avatar.textContent = initials(conv.name);
+        avatar.style.background = conv.color ? `linear-gradient(135deg,${conv.color[0]},${conv.color[1]})` : '';
+    }
+    const nameEl = document.getElementById('chatHeaderName');
+    if (nameEl) {
+        const tag = conv.type === 'channel' ? '<span class="channel-tag">канал</span>' : conv.type === 'dm' ? '' : '<span class="group-tag">группа</span>';
+        nameEl.innerHTML = escapeHtml(conv.name) + ' ' + tag + (conv.archived ? ' 📦' : '');
+    }
+    const statusEl = document.getElementById('chatHeaderStatus');
+    if (statusEl) {
+        const mc = conv.members ? conv.members.length : 1;
+        statusEl.textContent = conv.description || (conv.type === 'channel' ? mc + ' подписчиков' : mc + ' участников');
+    }
     const ban = document.getElementById('channelBanner'), bant = document.getElementById('channelBannerText');
-    if (conv.type === 'channel') { ban.style.display = 'flex'; bant.textContent = canWrite(conv) ? 'Вы можете писать (создатель/админ)' : 'Только создатель и админы могут писать'; }
-    else ban.style.display = 'none';
+    if (ban && bant) {
+        if (conv.type === 'channel') { ban.style.display = 'flex'; bant.textContent = canWrite(conv) ? 'Вы можете писать (создатель/админ)' : 'Только создатель и админы могут писать'; }
+        else ban.style.display = 'none';
+    }
     applyChatWallpaper(id);
     const form = document.getElementById('messageForm'), ro = document.getElementById('readonlyBar');
-    if (canWrite(conv)) { form.style.display = 'flex'; ro.style.display = 'none'; } else { form.style.display = 'none'; ro.style.display = 'flex'; }
-    curInput.value = state.drafts[id] || '';
-    document.getElementById('convList').classList.add('mobile-hide');
-    document.getElementById('chatWindow').classList.add('mobile-open');
-    document.getElementById('backBtn').style.display = '';
+    if (form && ro) {
+        if (canWrite(conv)) { form.style.display = 'flex'; ro.style.display = 'none'; } else { form.style.display = 'none'; ro.style.display = 'flex'; }
+    }
+    if (curInput) curInput.value = state.drafts[id] || '';
+    const cl = document.getElementById('convList'); if (cl) cl.classList.add('mobile-hide');
+    const cw = document.getElementById('chatWindow'); if (cw) cw.classList.add('mobile-open');
+    const bb = document.getElementById('backBtn'); if (bb) bb.style.display = '';
     renderMessages();
     renderConvList();
     updatePinnedBar();
     updateSmartReplies();
-    setTimeout(() => { const m = document.getElementById('messages'); m.scrollTop = m.scrollHeight; }, 50);
+    const m = document.getElementById('messages');
+    if (m) setTimeout(() => { m.scrollTop = m.scrollHeight; }, 50);
 }
-function closeChatMobile() { document.getElementById('convList').classList.remove('mobile-hide'); document.getElementById('chatWindow').classList.remove('mobile-open'); }
+function closeChatMobile() { 
+    const cl = document.getElementById('convList'); if (cl) cl.classList.remove('mobile-hide'); 
+    const cw = document.getElementById('chatWindow'); if (cw) cw.classList.remove('mobile-open'); 
+}
 function applyChatWallpaper(convId) {
     const wp = state.chatWallpapers[convId];
     const msgs = document.getElementById('messages');
+    if (!msgs) return;
     if (wp) { msgs.style.background = wp; msgs.classList.add('has-wallpaper'); }
     else { msgs.style.background = ''; msgs.classList.remove('has-wallpaper'); }
 }
 function updatePinnedBar() {
     const conv = state.convs.find(c => c.id === state.activeConv);
     const bar = document.getElementById('pinnedBar');
+    if (!bar) return;
     if (!conv || !conv.pinned || !conv.pinned.length) { bar.style.display = 'none'; return; }
     bar.style.display = 'flex';
     const last = conv.pinned[conv.pinned.length - 1];
     const msg = conv.messages.find(m => m.id === last);
-    document.getElementById('pinnedText').textContent = msg ? (msg.author + ': ' + (msg.text || '').slice(0, 50)) : '—';
+    const pt = document.getElementById('pinnedText');
+    if (pt) pt.textContent = msg ? (msg.author + ': ' + (msg.text || '').slice(0, 50)) : '—';
 }
 
 /* ============ MESSAGES ============ */
@@ -617,6 +661,7 @@ function renderMessages() {
     const conv = state.convs.find(c => c.id === state.activeConv);
     if (!conv) return;
     const container = document.getElementById('messages');
+    if (!container) return;
     if (!conv.messages.length) { container.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:40px 20px;font-size:13px;">Начните общение</div>'; return; }
     let html = '', lastDate = null;
     conv.messages.forEach(m => {
@@ -641,15 +686,11 @@ function renderMessages() {
         const editedHtml = m.edited ? '<span class="edited-tag">(изменено)</span>' : '';
         let bubbleContent = '';
         if (m.gift) {
-            bubbleContent = `<div class="gift-card${own ? ' own' : ''}${m.gift.rarity === 'legend' ? ' rarity-legend' : ''}" style="background:transparent;border:none;padding:0;width:200px;">
-                <div class="gift-sparkle" style="top: 10%; left: 15%;"></div>
-                <div class="gift-sparkle" style="top: 70%; right: 20%; animation-delay: .7s;"></div>
+            bubbleContent = `<div style="background:transparent;border:none;padding:0;width:200px;">
                 <img src="${m.gift.img}" alt="${m.gift.name}" style="width:80px;height:80px;object-fit:contain;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.4));">
-                <div class="gift-name" style="font-size:14px;font-weight:600;text-align:center;margin-top:8px;">${escapeHtml(m.gift.name)}</div>
-                <div class="gift-collection" style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;">${escapeHtml(m.gift.collection)}</div>
-                <div class="gift-rarity rarity-${m.gift.rarity}" style="font-size:10px;font-weight:700;padding:2px 10px;border-radius:10px;text-transform:uppercase;letter-spacing:.5px;">${rarityLabel[m.gift.rarity]}</div>
-                <div class="gift-num" style="font-size:11px;color:var(--text-muted);font-family:'Space Grotesk',monospace;background:rgba(0,0,0,.3);padding:2px 8px;border-radius:6px;margin-top:4px;">#${m.gift.number}</div>
-                ${m.text ? `<div style="font-size:12px;color:var(--text-secondary);text-align:center;margin-top:6px;padding-top:6px;border-top:1px solid var(--border);width:100%;">${escapeHtml(m.text)}</div>` : ''}
+                <div style="font-size:14px;font-weight:600;text-align:center;margin-top:8px;">${escapeHtml(m.gift.name)}</div>
+                <div style="font-size:10px;font-weight:700;padding:2px 10px;border-radius:10px;text-transform:uppercase;background:rgba(100,116,139,.2);color:#94a3b8;">${m.gift.rarity}</div>
+                ${m.text ? `<div style="font-size:12px;color:var(--text-secondary);text-align:center;margin-top:6px;padding-top:6px;border-top:1px solid var(--border);">${escapeHtml(m.text)}</div>` : ''}
             </div>`;
         }
         else if (m.voice) bubbleContent = `<audio class="voice-msg" controls src="${m.voice}"></audio>`;
@@ -700,15 +741,16 @@ function renderMessages() {
 
 function handleMsgAction(action, msgId) {
     const conv = state.convs.find(c => c.id === state.activeConv);
+    if (!conv) return;
     const msg = conv.messages.find(m => String(m.id) === String(msgId));
     if (!msg) return;
     sound.play('click');
     if (action === 'reply') {
         state.replyTo = msg;
-        document.getElementById('replyBar').classList.add('active');
-        document.getElementById('replyAuthor').textContent = msg.own ? state.profile.nickname : msg.author;
-        document.getElementById('replyText').textContent = msg.text || '[вложение]';
-        document.getElementById('messageInput').focus();
+        const rb = document.getElementById('replyBar'); if (rb) rb.classList.add('active');
+        const ra = document.getElementById('replyAuthor'); if (ra) ra.textContent = msg.own ? state.profile.nickname : msg.author;
+        const rt = document.getElementById('replyText'); if (rt) rt.textContent = msg.text || '[вложение]';
+        const mi = document.getElementById('messageInput'); if (mi) mi.focus();
     } else if (action === 'react') toggleReaction(msgId, '👍');
     else if (action === 'copy') { navigator.clipboard?.writeText(msg.text || ''); showNotif('Скопировано', (msg.text || '').slice(0, 40)); }
     else if (action === 'forward') {
@@ -721,8 +763,7 @@ function handleMsgAction(action, msgId) {
     } else if (action === 'edit') {
         state.editingMsg = msg;
         const input = document.getElementById('messageInput');
-        input.value = msg.text;
-        input.focus();
+        if (input) { input.value = msg.text; input.focus(); }
         showNotif('Редактирование', 'Esc — отмена');
     } else if (action === 'delete') {
         conv.messages = conv.messages.filter(m => m.id !== msg.id);
@@ -750,13 +791,17 @@ function votePoll(msgId, optIdx) {
 }
 
 /* ============ SEND ============ */
-document.getElementById('messageForm').addEventListener('submit', (e) => { e.preventDefault(); sendMessage(); });
+const messageForm = document.getElementById('messageForm');
+if (messageForm) {
+    messageForm.addEventListener('submit', (e) => { e.preventDefault(); sendMessage(); });
+}
 function sendMessage() {
     const input = document.getElementById('messageInput');
+    if (!input) return;
     const text = input.value.trim();
     if (!text || !state.activeConv) return;
     const conv = state.convs.find(c => c.id === state.activeConv);
-    if (!canWrite(conv)) { sound.play('error'); return; }
+    if (!conv || !canWrite(conv)) { sound.play('error'); return; }
     if (state.editingMsg) {
         state.editingMsg.text = text;
         state.editingMsg.edited = true;
@@ -781,8 +826,8 @@ function sendMessage() {
     input.value = '';
     delete state.drafts[conv.id];
     state.replyTo = null;
-    document.getElementById('replyBar').classList.remove('active');
-    document.getElementById('smartReplies').style.display = 'none';
+    const rb = document.getElementById('replyBar'); if (rb) rb.classList.remove('active');
+    const sr = document.getElementById('smartReplies'); if (sr) sr.style.display = 'none';
     sound.play('send');
     renderMessages(); renderConvList(); saveToStorage();
 }
@@ -830,13 +875,8 @@ function attachSwipeHandlers() {
             if (leftInd) { leftInd.remove(); leftInd = null; }
             if (rightInd) { rightInd.remove(); rightInd = null; }
             const msgId = el.dataset.id;
-            if (dx > 60) {
-                handleMsgAction('reply', msgId);
-                sound.play('click');
-            } else if (dx < -60) {
-                handleMsgAction('delete', msgId);
-                sound.play('click');
-            }
+            if (dx > 60) { handleMsgAction('reply', msgId); sound.play('click'); }
+            else if (dx < -60) { handleMsgAction('delete', msgId); sound.play('click'); }
             currentX = 0;
         });
     });
@@ -845,6 +885,7 @@ function attachSwipeHandlers() {
 /* ============ NOTIFICATIONS UI ============ */
 function showNotif(title, text, avatar) {
     const container = document.getElementById('notifContainer');
+    if (!container) return;
     const el = document.createElement('div');
     el.className = 'notif';
     const av = avatar || title.charAt(0).toUpperCase();
@@ -864,16 +905,23 @@ document.querySelectorAll('.nav-item').forEach(item => {
         item.classList.add('active');
         const tab = item.dataset.tab;
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-        document.getElementById('tab-' + tab).classList.add('active');
-        if (tab === 'chats') { document.getElementById('convList').classList.remove('mobile-hide'); document.getElementById('chatWindow').classList.remove('mobile-open'); }
+        const tgt = document.getElementById('tab-' + tab);
+        if (tgt) tgt.classList.add('active');
+        if (tab === 'chats') { 
+            const cl = document.getElementById('convList'); if (cl) cl.classList.remove('mobile-hide'); 
+            const cw = document.getElementById('chatWindow'); if (cw) cw.classList.remove('mobile-open'); 
+        }
         if (tab === 'profile') updateProfileUI();
         if (tab === 'friends') renderFriends();
         if (tab === 'gifts') renderGifts();
     });
 });
-document.getElementById('backBtn').addEventListener('click', closeChatMobile);
-document.getElementById('themeToggle').addEventListener('click', toggleTheme);
-document.getElementById('themeSettingsBtn').addEventListener('click', () => { sound.play('click'); renderThemeGrid(); openModal('themeModal'); });
+const backBtn = document.getElementById('backBtn');
+if (backBtn) backBtn.addEventListener('click', closeChatMobile);
+const themeToggle = document.getElementById('themeToggle');
+if (themeToggle) themeToggle.addEventListener('click', toggleTheme);
+const themeSettingsBtn = document.getElementById('themeSettingsBtn');
+if (themeSettingsBtn) themeSettingsBtn.addEventListener('click', () => { sound.play('click'); renderThemeGrid(); openModal('themeModal'); });
 
 /* ============ THEME MODAL ============ */
 document.querySelectorAll('#themeModeSwitch button').forEach(btn => {
@@ -886,6 +934,7 @@ document.querySelectorAll('#themeModeSwitch button').forEach(btn => {
 function renderThemeGrid() {
     document.querySelectorAll('#themeModeSwitch button').forEach(b => b.classList.toggle('active', b.dataset.mode === state.themeMode));
     const grid = document.getElementById('themeGrid');
+    if (!grid) return;
     grid.innerHTML = Object.entries(themeColors).map(([key, t]) => {
         const c = t[state.themeMode === 'light' ? 'light' : 'dark'];
         const act = key === state.themeColor ? ' active' : '';
@@ -907,13 +956,16 @@ function renderThemeGrid() {
 }
 
 /* ============ ARCHIVE ============ */
-document.getElementById('archiveChatBtn').addEventListener('click', () => {
-    const conv = state.convs.find(c => c.id === state.activeConv);
-    if (!conv) return;
-    conv.archived = !conv.archived;
-    saveToStorage(); renderConvList(); sound.play('click');
-    if (state.activeConv === conv.id) openConv(conv.id);
-});
+const archiveChatBtn = document.getElementById('archiveChatBtn');
+if (archiveChatBtn) {
+    archiveChatBtn.addEventListener('click', () => {
+        const conv = state.convs.find(c => c.id === state.activeConv);
+        if (!conv) return;
+        conv.archived = !conv.archived;
+        saveToStorage(); renderConvList(); sound.play('click');
+        if (state.activeConv === conv.id) openConv(conv.id);
+    });
+}
 
 /* ============ FILTERS ============ */
 document.querySelectorAll('.conv-tab').forEach(tab => {
@@ -925,78 +977,101 @@ document.querySelectorAll('.conv-tab').forEach(tab => {
         renderConvList();
     });
 });
-document.getElementById('convSearch').addEventListener('input', (e) => { state.search = e.target.value; renderConvList(); });
+const convSearch = document.getElementById('convSearch');
+if (convSearch) convSearch.addEventListener('input', (e) => { state.search = e.target.value; renderConvList(); });
 
 /* ============ CHAT ACTIONS ============ */
-document.getElementById('muteBtn').addEventListener('click', () => {
-    const conv = state.convs.find(c => c.id === state.activeConv);
-    if (!conv) return;
-    conv.muted = !conv.muted;
-    saveToStorage(); renderConvList(); sound.play('click');
-    showNotif(conv.muted ? 'Без звука' : 'Звук включён', conv.name);
-});
-document.getElementById('clearChatBtn').addEventListener('click', () => {
-    const conv = state.convs.find(c => c.id === state.activeConv);
-    if (!conv) return;
-    if (confirm('Очистить?')) { conv.messages = []; renderMessages(); renderConvList(); saveToStorage(); sound.play('click'); }
-});
-document.getElementById('cancelReply').addEventListener('click', () => {
-    state.replyTo = null; state.editingMsg = null;
-    document.getElementById('replyBar').classList.remove('active');
-    document.getElementById('messageInput').value = '';
-});
-document.getElementById('searchMsgBtn').addEventListener('click', () => openModal('searchModal'));
-document.getElementById('pinnedBtn').addEventListener('click', () => openPinnedModal());
+const muteBtn = document.getElementById('muteBtn');
+if (muteBtn) {
+    muteBtn.addEventListener('click', () => {
+        const conv = state.convs.find(c => c.id === state.activeConv);
+        if (!conv) return;
+        conv.muted = !conv.muted;
+        saveToStorage(); renderConvList(); sound.play('click');
+        showNotif(conv.muted ? 'Без звука' : 'Звук включён', conv.name);
+    });
+}
+const clearChatBtn = document.getElementById('clearChatBtn');
+if (clearChatBtn) {
+    clearChatBtn.addEventListener('click', () => {
+        const conv = state.convs.find(c => c.id === state.activeConv);
+        if (!conv) return;
+        if (confirm('Очистить?')) { conv.messages = []; renderMessages(); renderConvList(); saveToStorage(); sound.play('click'); }
+    });
+}
+const cancelReply = document.getElementById('cancelReply');
+if (cancelReply) {
+    cancelReply.addEventListener('click', () => {
+        state.replyTo = null; state.editingMsg = null;
+        const rb = document.getElementById('replyBar'); if (rb) rb.classList.remove('active');
+        const mi = document.getElementById('messageInput'); if (mi) mi.value = '';
+    });
+}
+const searchMsgBtn = document.getElementById('searchMsgBtn');
+if (searchMsgBtn) searchMsgBtn.addEventListener('click', () => openModal('searchModal'));
+const pinnedBtn = document.getElementById('pinnedBtn');
+if (pinnedBtn) pinnedBtn.addEventListener('click', () => openPinnedModal());
 
 /* ============ MODALS ============ */
-function openModal(id) { document.getElementById(id).classList.add('active'); }
-function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+function openModal(id) { const m = document.getElementById(id); if (m) m.classList.add('active'); }
+function closeModal(id) { const m = document.getElementById(id); if (m) m.classList.remove('active'); }
 document.querySelectorAll('[data-close]').forEach(btn => btn.addEventListener('click', () => closeModal(btn.dataset.close)));
 document.querySelectorAll('.modal-overlay').forEach(o => o.addEventListener('click', (e) => { if (e.target === o) closeModal(o.id); }));
 
 /* ============ CREATE ============ */
 function renderCreateColors() {
     const c = document.getElementById('createAvatarChoices');
+    if (!c) return;
     c.innerHTML = avatarColors.slice(0, 8).map((col, i) => `<div class="avatar-choice${i === state.createSelectedColor ? ' selected' : ''}" data-idx="${i}" style="background: linear-gradient(135deg, ${col[0]}, ${col[1]})"></div>`).join('');
     c.querySelectorAll('.avatar-choice').forEach(el => el.addEventListener('click', () => {
         c.querySelectorAll('.avatar-choice').forEach(x => x.classList.remove('selected'));
         el.classList.add('selected'); state.createSelectedColor = parseInt(el.dataset.idx); sound.play('click');
     }));
 }
-document.getElementById('createChatBtn').addEventListener('click', () => {
-    sound.play('click');
-    state.createType = 'channel'; state.createSelectedColor = 0;
-    document.getElementById('createName').value = '';
-    document.getElementById('createDesc').value = '';
-    document.querySelectorAll('#createTypeSwitch button').forEach(b => b.classList.remove('active'));
-    document.querySelector('#createTypeSwitch button[data-type="channel"]').classList.add('active');
-    document.getElementById('createTypeHint').querySelector('span').textContent = 'В канале писать могут только создатель и админы';
-    renderCreateColors(); openModal('createChatModal');
-});
+const createChatBtn = document.getElementById('createChatBtn');
+if (createChatBtn) {
+    createChatBtn.addEventListener('click', () => {
+        sound.play('click');
+        state.createType = 'channel'; state.createSelectedColor = 0;
+        const cn = document.getElementById('createName'); if (cn) cn.value = '';
+        const cd = document.getElementById('createDesc'); if (cd) cd.value = '';
+        document.querySelectorAll('#createTypeSwitch button').forEach(b => b.classList.remove('active'));
+        const chBtn = document.querySelector('#createTypeSwitch button[data-type="channel"]'); if (chBtn) chBtn.classList.add('active');
+        const hint = document.getElementById('createTypeHint');
+        if (hint && hint.querySelector('span')) hint.querySelector('span').textContent = 'В канале писать могут только создатель и админы';
+        renderCreateColors(); openModal('createChatModal');
+    });
+}
 document.querySelectorAll('#createTypeSwitch button').forEach(b => b.addEventListener('click', () => {
     sound.play('click');
     document.querySelectorAll('#createTypeSwitch button').forEach(x => x.classList.remove('active'));
     b.classList.add('active'); state.createType = b.dataset.type;
-    document.getElementById('createTypeHint').querySelector('span').textContent = state.createType === 'channel' ? 'В канале писать могут только создатель и админы' : 'В группе могут писать все участники';
+    const hint = document.getElementById('createTypeHint');
+    if (hint && hint.querySelector('span')) hint.querySelector('span').textContent = state.createType === 'channel' ? 'В канале писать могут только создатель и админы' : 'В группе могут писать все участники';
 }));
-document.getElementById('confirmCreateBtn').addEventListener('click', () => {
-    const name = document.getElementById('createName').value.trim();
-    const desc = document.getElementById('createDesc').value.trim();
-    if (!name) { sound.play('error'); return; }
-    if (state.convs.some(c => c.name.toLowerCase() === name.toLowerCase())) { showNotif('Ошибка', 'Уже существует'); return; }
-    const nc = {
-        id: genId(), name, description: desc || (state.createType === 'channel' ? 'Канал' : 'Группа'),
-        type: state.createType, color: avatarColors[state.createSelectedColor],
-        messages: [], unread: 0, archived: false, muted: false,
-        creatorLogin: state.login,
-        members: [{ login: state.login, name: state.profile.nickname, role: 'creator' }]
-    };
-    state.convs.unshift(nc);
-    saveToStorage(); renderConvList();
-    closeModal('createChatModal');
-    sound.play('success');
-    setTimeout(() => openConv(nc.id), 300);
-});
+const confirmCreateBtn = document.getElementById('confirmCreateBtn');
+if (confirmCreateBtn) {
+    confirmCreateBtn.addEventListener('click', () => {
+        const nameEl = document.getElementById('createName');
+        const descEl = document.getElementById('createDesc');
+        const name = nameEl ? nameEl.value.trim() : '';
+        const desc = descEl ? descEl.value.trim() : '';
+        if (!name) { sound.play('error'); return; }
+        if (state.convs.some(c => c.name.toLowerCase() === name.toLowerCase())) { showNotif('Ошибка', 'Уже существует'); return; }
+        const nc = {
+            id: genId(), name, description: desc || (state.createType === 'channel' ? 'Канал' : 'Группа'),
+            type: state.createType, color: avatarColors[state.createSelectedColor],
+            messages: [], unread: 0, archived: false, muted: false,
+            creatorLogin: state.login,
+            members: [{ login: state.login, name: state.profile.nickname, role: 'creator' }]
+        };
+        state.convs.unshift(nc);
+        saveToStorage(); renderConvList();
+        closeModal('createChatModal');
+        sound.play('success');
+        setTimeout(() => openConv(nc.id), 300);
+    });
+}
 
 /* ============ MEMBERS ============ */
 function openMembersModal() {
@@ -1005,9 +1080,10 @@ function openMembersModal() {
     const myRole = getMemberRole(conv, state.login);
     const isC = myRole === 'creator', isA = myRole === 'admin';
     const canM = isC || isA;
-    document.getElementById('membersHeaderInfo').innerHTML = `<b>${escapeHtml(conv.name)}</b> — ${conv.type === 'channel' ? 'канал' : 'группа'}`;
-    document.getElementById('addMemberForm').style.display = canM ? 'flex' : 'none';
+    const mhi = document.getElementById('membersHeaderInfo'); if (mhi) mhi.innerHTML = `<b>${escapeHtml(conv.name)}</b> — ${conv.type === 'channel' ? 'канал' : 'группа'}`;
+    const amf = document.getElementById('addMemberForm'); if (amf) amf.style.display = canM ? 'flex' : 'none';
     const list = document.getElementById('membersList');
+    if (!list) return;
     list.innerHTML = conv.members.map(m => {
         const rL = m.role === 'creator' ? '<span class="role-pill creator">создатель</span>' : m.role === 'admin' ? '<span class="role-pill admin">админ</span>' : '<span class="role-pill member">участник</span>';
         const canP = isC && m.role !== 'creator';
@@ -1029,22 +1105,28 @@ function openMembersModal() {
     }));
     openModal('membersModal');
 }
-document.getElementById('membersBtn').addEventListener('click', () => { sound.play('click'); openMembersModal(); });
-document.getElementById('addMemberBtn').addEventListener('click', () => {
-    const conv = state.convs.find(c => c.id === state.activeConv);
-    const name = document.getElementById('newMemberName').value.trim();
-    if (!conv || !name) return;
-    if (conv.members.some(m => m.name.toLowerCase() === name.toLowerCase())) { showNotif('Ошибка', 'Уже есть'); return; }
-    conv.members.push({ login: name.toLowerCase().replace(/\s+/g, '_'), name, role: 'member' });
-    document.getElementById('newMemberName').value = '';
-    saveToStorage(); openMembersModal(); sound.play('success');
-});
+const membersBtn = document.getElementById('membersBtn');
+if (membersBtn) membersBtn.addEventListener('click', () => { sound.play('click'); openMembersModal(); });
+const addMemberBtn = document.getElementById('addMemberBtn');
+if (addMemberBtn) {
+    addMemberBtn.addEventListener('click', () => {
+        const conv = state.convs.find(c => c.id === state.activeConv);
+        const nameEl = document.getElementById('newMemberName');
+        const name = nameEl ? nameEl.value.trim() : '';
+        if (!conv || !name) return;
+        if (conv.members.some(m => m.name.toLowerCase() === name.toLowerCase())) { showNotif('Ошибка', 'Уже есть'); return; }
+        conv.members.push({ login: name.toLowerCase().replace(/\s+/g, '_'), name, role: 'member' });
+        if (nameEl) nameEl.value = '';
+        saveToStorage(); openMembersModal(); sound.play('success');
+    });
+}
 
 /* ============ DEVELOPERS ============ */
 function renderDevelopersModal() {
     const devs = getAllUsersList().filter(u => u.role === 'creator' || u.role === 'developer');
     const list = document.getElementById('devsList');
-    document.getElementById('addDevForm').style.display = isCreator() ? 'flex' : 'none';
+    if (!list) return;
+    const adf = document.getElementById('addDevForm'); if (adf) adf.style.display = isCreator() ? 'flex' : 'none';
     if (!devs.length) { list.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:20px;">Нет разработчиков</div>'; return; }
     list.innerHTML = devs.map(u => {
         const isMe = u.login === state.login;
@@ -1057,27 +1139,39 @@ function renderDevelopersModal() {
         if (users[b.dataset.login]) { users[b.dataset.login].role = 'user'; saveUsers(users); renderDevelopersModal(); sound.play('click'); }
     }));
 }
-document.getElementById('developersBtn')?.addEventListener('click', () => { sound.play('click'); renderDevelopersModal(); openModal('developersModal'); });
-document.getElementById('addDevBtn')?.addEventListener('click', () => {
-    if (!isCreator()) return;
-    const login = document.getElementById('newDevName').value.trim().toLowerCase();
-    if (!login) return;
-    const users = getUsers();
-    if (!users[login]) { showNotif('Ошибка', 'Пользователь не найден'); return; }
-    users[login].role = 'developer'; saveUsers(users);
-    document.getElementById('newDevName').value = '';
-    renderDevelopersModal(); sound.play('success');
-});
+const developersBtn = document.getElementById('developersBtn');
+if (developersBtn) developersBtn.addEventListener('click', () => { sound.play('click'); renderDevelopersModal(); openModal('developersModal'); });
+const addDevBtn = document.getElementById('addDevBtn');
+if (addDevBtn) {
+    addDevBtn.addEventListener('click', () => {
+        if (!isCreator()) return;
+        const nameEl = document.getElementById('newDevName');
+        const login = nameEl ? nameEl.value.trim().toLowerCase() : '';
+        if (!login) return;
+        const users = getUsers();
+        if (!users[login]) { showNotif('Ошибка', 'Пользователь не найден'); return; }
+        users[login].role = 'developer'; saveUsers(users);
+        if (nameEl) nameEl.value = '';
+        renderDevelopersModal(); sound.play('success');
+    });
+}
 
 /* ============ SEARCH ============ */
-document.getElementById('msgSearchInput').addEventListener('input', performSearch);
-document.getElementById('searchAuthorFilter').addEventListener('input', performSearch);
-document.getElementById('searchDateFilter').addEventListener('change', performSearch);
+const msgSearchInput = document.getElementById('msgSearchInput');
+if (msgSearchInput) msgSearchInput.addEventListener('input', performSearch);
+const searchAuthorFilter = document.getElementById('searchAuthorFilter');
+if (searchAuthorFilter) searchAuthorFilter.addEventListener('input', performSearch);
+const searchDateFilter = document.getElementById('searchDateFilter');
+if (searchDateFilter) searchDateFilter.addEventListener('change', performSearch);
 function performSearch() {
-    const q = document.getElementById('msgSearchInput').value.toLowerCase().trim();
-    const author = document.getElementById('searchAuthorFilter').value.toLowerCase().trim();
-    const date = document.getElementById('searchDateFilter').value;
+    const qEl = document.getElementById('msgSearchInput');
+    const aEl = document.getElementById('searchAuthorFilter');
+    const dEl = document.getElementById('searchDateFilter');
+    const q = qEl ? qEl.value.toLowerCase().trim() : '';
+    const author = aEl ? aEl.value.toLowerCase().trim() : '';
+    const date = dEl ? dEl.value : '';
     const results = document.getElementById('searchResults');
+    if (!results) return;
     if (!q && !author && !date) { results.innerHTML = '<div class="search-empty">Введите запрос</div>'; return; }
     const matches = [];
     state.convs.forEach(conv => {
@@ -1112,6 +1206,7 @@ function performSearch() {
 function openPinnedModal() {
     const conv = state.convs.find(c => c.id === state.activeConv);
     const list = document.getElementById('pinnedList');
+    if (!list) return;
     if (!conv || !conv.pinned || !conv.pinned.length) { list.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:20px;">Нет закреплённых</div>'; }
     else {
         list.innerHTML = conv.pinned.map(id => {
@@ -1120,11 +1215,11 @@ function openPinnedModal() {
             return `<div class="pinned-item" data-msg="${id}"><div class="pinned-item-author">${escapeHtml(m.author)}</div><div class="pinned-item-text">${escapeHtml(m.text || '[вложение]')}</div><div class="pinned-item-footer"><span>${formatTime(m.time)}</span><button class="unpin-btn" data-msg="${id}" style="color:var(--danger);background:none;border:none;cursor:pointer;font-size:11px;">Открепить</button></div></div>`;
         }).join('');
     }
-    document.querySelectorAll('.pinned-item').forEach(el => el.addEventListener('click', () => {
+    list.querySelectorAll('.pinned-item').forEach(el => el.addEventListener('click', () => {
         const m = document.querySelector(`.message[data-id="${el.dataset.msg}"]`);
         if (m) { closeModal('pinnedModal'); m.scrollIntoView({ behavior: 'smooth', block: 'center' }); m.classList.add('highlight'); setTimeout(() => m.classList.remove('highlight'), 1500); }
     }));
-    document.querySelectorAll('.unpin-btn').forEach(b => b.addEventListener('click', (e) => {
+    list.querySelectorAll('.unpin-btn').forEach(b => b.addEventListener('click', (e) => {
         e.stopPropagation();
         const id = b.dataset.msg;
         conv.pinned = conv.pinned.filter(x => String(x) !== String(id));
@@ -1132,16 +1227,20 @@ function openPinnedModal() {
     }));
     openModal('pinnedModal');
 }
-document.getElementById('unpinBtn')?.addEventListener('click', () => {
-    const conv = state.convs.find(c => c.id === state.activeConv);
-    if (!conv || !conv.pinned) return;
-    conv.pinned = conv.pinned.slice(0, -1);
-    saveToStorage(); updatePinnedBar();
-});
+const unpinBtn = document.getElementById('unpinBtn');
+if (unpinBtn) {
+    unpinBtn.addEventListener('click', () => {
+        const conv = state.convs.find(c => c.id === state.activeConv);
+        if (!conv || !conv.pinned) return;
+        conv.pinned = conv.pinned.slice(0, -1);
+        saveToStorage(); updatePinnedBar();
+    });
+}
 
 /* ============ FORWARD ============ */
 function openForwardModal() {
     const list = document.getElementById('forwardList');
+    if (!list) return;
     list.innerHTML = state.convs.filter(c => canWrite(c)).map(c => `<div class="forward-item" data-id="${c.id}"><div class="forward-avatar">${initials(c.name)}</div><div class="forward-name">${escapeHtml(c.name)}</div></div>`).join('');
     list.querySelectorAll('.forward-item').forEach(el => el.addEventListener('click', () => {
         const target = state.convs.find(c => c.id === el.dataset.id);
@@ -1155,22 +1254,29 @@ function openForwardModal() {
 }
 
 /* ============ POLL ============ */
-function openPollModal() { openModal('pollModal'); }
-document.getElementById('createPollBtn').addEventListener('click', () => {
-    const q = document.getElementById('pollQuestion').value.trim();
-    const opts = document.getElementById('pollOptions').value.split('\n').map(x => x.trim()).filter(x => x);
-    if (!q || opts.length < 2) { showNotif('Ошибка', 'Нужен вопрос и минимум 2 варианта'); return; }
-    const conv = state.convs.find(c => c.id === state.activeConv);
-    if (!conv) return;
-    conv.messages.push({ id: Date.now() + Math.random(), author: state.profile.nickname, time: Date.now(), own: true, poll: { question: q, options: opts, votes: opts.map(() => []) }, reactions: [], globalRole: state.role, replyTo: null });
-    saveToStorage(); renderMessages(); renderConvList();
-    closeModal('pollModal'); document.getElementById('pollQuestion').value = ''; document.getElementById('pollOptions').value = 'Да\nНет\nМожет быть';
-    sound.play('success');
-});
+const createPollBtn = document.getElementById('createPollBtn');
+if (createPollBtn) {
+    createPollBtn.addEventListener('click', () => {
+        const qEl = document.getElementById('pollQuestion');
+        const oEl = document.getElementById('pollOptions');
+        const q = qEl ? qEl.value.trim() : '';
+        const opts = oEl ? oEl.value.split('\n').map(x => x.trim()).filter(x => x) : [];
+        if (!q || opts.length < 2) { showNotif('Ошибка', 'Нужен вопрос и минимум 2 варианта'); return; }
+        const conv = state.convs.find(c => c.id === state.activeConv);
+        if (!conv) return;
+        conv.messages.push({ id: Date.now() + Math.random(), author: state.profile.nickname, time: Date.now(), own: true, poll: { question: q, options: opts, votes: opts.map(() => []) }, reactions: [], globalRole: state.role, replyTo: null });
+        saveToStorage(); renderMessages(); renderConvList();
+        closeModal('pollModal'); 
+        if (qEl) qEl.value = ''; 
+        if (oEl) oEl.value = 'Да\nНет\nМожет быть';
+        sound.play('success');
+    });
+}
 
 /* ============ EMOJI PICKER ============ */
 function renderEmojiPicker() {
     const cats = document.getElementById('emojiCategories');
+    if (!cats) return;
     cats.innerHTML = Object.keys(emojiCategories).map((cat, i) => `<button class="emoji-cat-btn${i === 0 ? ' active' : ''}" data-cat="${cat}">${emojiCategories[cat][0]}</button>`).join('');
     cats.querySelectorAll('.emoji-cat-btn').forEach(b => b.addEventListener('click', () => {
         cats.querySelectorAll('.emoji-cat-btn').forEach(x => x.classList.remove('active'));
@@ -1181,131 +1287,159 @@ function renderEmojiPicker() {
 }
 function renderEmojiSection(cat) {
     const scroll = document.getElementById('emojiScroll');
+    if (!scroll) return;
     const emojis = emojiCategories[cat] || [];
     scroll.innerHTML = `<div class="emoji-section-title">${cat}</div><div class="emoji-grid">${emojis.map(e => `<button class="emoji-item" data-emoji="${e}">${emojiImg(e)}</button>`).join('')}</div>`;
     scroll.querySelectorAll('.emoji-item').forEach(b => b.addEventListener('click', () => {
         const input = document.getElementById('messageInput');
-        input.value += b.dataset.emoji;
-        input.focus();
+        if (input) { input.value += b.dataset.emoji; input.focus(); }
     }));
 }
-document.getElementById('emojiBtn').addEventListener('click', () => { sound.play('click'); renderEmojiPicker(); openModal('emojiModal'); });
-document.getElementById('emojiModalSearch').addEventListener('input', (e) => {
-    const q = e.target.value.toLowerCase().trim();
-    if (!q) { renderEmojiSection('Часто'); return; }
-    const allEmojis = Object.values(emojiCategories).flat();
-    const filtered = allEmojis.filter(e => e.includes(q) || e.toLowerCase().includes(q));
-    const scroll = document.getElementById('emojiScroll');
-    scroll.innerHTML = `<div class="emoji-section-title">Найдено: ${filtered.length}</div><div class="emoji-grid">${filtered.slice(0, 60).map(e => `<button class="emoji-item" data-emoji="${e}">${emojiImg(e)}</button>`).join('')}</div>`;
-    scroll.querySelectorAll('.emoji-item').forEach(b => b.addEventListener('click', () => { document.getElementById('messageInput').value += b.dataset.emoji; }));
-});
+const emojiBtn = document.getElementById('emojiBtn');
+if (emojiBtn) emojiBtn.addEventListener('click', () => { sound.play('click'); renderEmojiPicker(); openModal('emojiModal'); });
+const emojiModalSearch = document.getElementById('emojiModalSearch');
+if (emojiModalSearch) {
+    emojiModalSearch.addEventListener('input', (e) => {
+        const q = e.target.value.toLowerCase().trim();
+        if (!q) { renderEmojiSection('Часто'); return; }
+        const allEmojis = Object.values(emojiCategories).flat();
+        const filtered = allEmojis.filter(e => e.includes(q) || e.toLowerCase().includes(q));
+        const scroll = document.getElementById('emojiScroll');
+        if (!scroll) return;
+        scroll.innerHTML = `<div class="emoji-section-title">Найдено: ${filtered.length}</div><div class="emoji-grid">${filtered.slice(0, 60).map(e => `<button class="emoji-item" data-emoji="${e}">${emojiImg(e)}</button>`).join('')}</div>`;
+        scroll.querySelectorAll('.emoji-item').forEach(b => b.addEventListener('click', () => { 
+            const input = document.getElementById('messageInput');
+            if (input) input.value += b.dataset.emoji; 
+        }));
+    });
+}
 
 /* ============ STICKERS ============ */
-document.getElementById('stickerBtn').addEventListener('click', () => {
-    sound.play('click');
-    const grid = document.getElementById('stickerGrid');
-    grid.innerHTML = stickers.map(s => `<div class="sticker-item" data-sticker="${s}">${emojiImg(s)}</div>`).join('');
-    grid.querySelectorAll('.sticker-item').forEach(el => el.addEventListener('click', () => {
-        const conv = state.convs.find(c => c.id === state.activeConv);
-        if (!conv || !canWrite(conv)) return;
-        conv.messages.push({ id: Date.now() + Math.random(), author: state.profile.nickname, time: Date.now(), own: true, sticker: el.dataset.sticker, reactions: [], globalRole: state.role, replyTo: null });
-        saveToStorage(); renderMessages(); renderConvList();
-        closeModal('stickerModal'); sound.play('send');
-    }));
-    openModal('stickerModal');
-});
+const stickerBtn = document.getElementById('stickerBtn');
+if (stickerBtn) {
+    stickerBtn.addEventListener('click', () => {
+        sound.play('click');
+        const grid = document.getElementById('stickerGrid');
+        if (!grid) return;
+        grid.innerHTML = stickers.map(s => `<div class="sticker-item" data-sticker="${s}">${emojiImg(s)}</div>`).join('');
+        grid.querySelectorAll('.sticker-item').forEach(el => el.addEventListener('click', () => {
+            const conv = state.convs.find(c => c.id === state.activeConv);
+            if (!conv || !canWrite(conv)) return;
+            conv.messages.push({ id: Date.now() + Math.random(), author: state.profile.nickname, time: Date.now(), own: true, sticker: el.dataset.sticker, reactions: [], globalRole: state.role, replyTo: null });
+            saveToStorage(); renderMessages(); renderConvList();
+            closeModal('stickerModal'); sound.play('send');
+        }));
+        openModal('stickerModal');
+    });
+}
 
 /* ============ FILES ============ */
-document.getElementById('attachBtn').addEventListener('click', () => document.getElementById('fileInput').click());
-document.getElementById('fileInput').addEventListener('change', async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const conv = state.convs.find(c => c.id === state.activeConv);
-    if (!conv || !canWrite(conv)) return;
-    if (file.size > 5 * 1024 * 1024) { showNotif('Ошибка', 'Файл больше 5 МБ'); return; }
-    const reader = new FileReader();
-    reader.onload = () => {
-        conv.messages.push({ id: Date.now() + Math.random(), author: state.profile.nickname, time: Date.now(), own: true, file: { name: file.name, type: file.type, data: reader.result }, reactions: [], globalRole: state.role, replyTo: null });
-        saveToStorage(); renderMessages(); renderConvList(); sound.play('send');
-    };
-    reader.readAsDataURL(file);
-    e.target.value = '';
-});
+const attachBtn = document.getElementById('attachBtn');
+const fileInput = document.getElementById('fileInput');
+if (attachBtn && fileInput) {
+    attachBtn.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const conv = state.convs.find(c => c.id === state.activeConv);
+        if (!conv || !canWrite(conv)) return;
+        if (file.size > 5 * 1024 * 1024) { showNotif('Ошибка', 'Файл больше 5 МБ'); return; }
+        const reader = new FileReader();
+        reader.onload = () => {
+            conv.messages.push({ id: Date.now() + Math.random(), author: state.profile.nickname, time: Date.now(), own: true, file: { name: file.name, type: file.type, data: reader.result }, reactions: [], globalRole: state.role, replyTo: null });
+            saveToStorage(); renderMessages(); renderConvList(); sound.play('send');
+        };
+        reader.readAsDataURL(file);
+        e.target.value = '';
+    });
+}
 
 /* ============ VOICE ============ */
-document.getElementById('voiceBtn').addEventListener('click', async () => {
-    if (state.recording) return;
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        const rec = new MediaRecorder(stream);
-        const chunks = [];
-        rec.ondataavailable = e => chunks.push(e.data);
-        rec.onstop = () => {
-            stream.getTracks().forEach(t => t.stop());
-            const blob = new Blob(chunks, { type: 'audio/webm' });
-            state.voiceBlob = blob;
-            const reader = new FileReader();
-            reader.onload = () => {
-                const conv = state.convs.find(c => c.id === state.activeConv);
-                if (!conv) return;
-                conv.messages.push({ id: Date.now() + Math.random(), author: state.profile.nickname, time: Date.now(), own: true, voice: reader.result, reactions: [], globalRole: state.role, replyTo: null });
-                saveToStorage(); renderMessages(); renderConvList();
-                document.getElementById('voiceRecording').style.display = 'none';
-                clearInterval(state.recordTimer);
-                sound.play('send');
+const voiceBtn = document.getElementById('voiceBtn');
+if (voiceBtn) {
+    voiceBtn.addEventListener('click', async () => {
+        if (state.recording) return;
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const rec = new MediaRecorder(stream);
+            const chunks = [];
+            rec.ondataavailable = e => chunks.push(e.data);
+            rec.onstop = () => {
+                stream.getTracks().forEach(t => t.stop());
+                const blob = new Blob(chunks, { type: 'audio/webm' });
+                state.voiceBlob = blob;
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const conv = state.convs.find(c => c.id === state.activeConv);
+                    if (!conv) return;
+                    conv.messages.push({ id: Date.now() + Math.random(), author: state.profile.nickname, time: Date.now(), own: true, voice: reader.result, reactions: [], globalRole: state.role, replyTo: null });
+                    saveToStorage(); renderMessages(); renderConvList();
+                    const vr = document.getElementById('voiceRecording'); if (vr) vr.style.display = 'none';
+                    clearInterval(state.recordTimer);
+                    sound.play('send');
+                };
+                reader.readAsDataURL(blob);
             };
-            reader.readAsDataURL(blob);
-        };
-        state.recording = rec;
-        state.recordStart = Date.now();
-        rec.start();
-        document.getElementById('voiceRecording').style.display = 'flex';
-        state.recordTimer = setInterval(() => {
-            const sec = Math.floor((Date.now() - state.recordStart) / 1000);
-            document.getElementById('recTime').textContent = formatDuration(sec);
-            if (sec > 60) { rec.stop(); state.recording = null; }
-        }, 200);
-    } catch (e) { showNotif('Ошибка', 'Нет доступа к микрофону'); }
-});
-document.getElementById('cancelVoice').addEventListener('click', () => {
-    if (state.recording) { state.recording.stop(); state.recording = null; }
-    document.getElementById('voiceRecording').style.display = 'none';
-    clearInterval(state.recordTimer);
-});
-document.getElementById('sendVoice').addEventListener('click', () => { if (state.recording) state.recording.stop(); state.recording = null; });
+            state.recording = rec;
+            state.recordStart = Date.now();
+            rec.start();
+            const vr = document.getElementById('voiceRecording'); if (vr) vr.style.display = 'flex';
+            state.recordTimer = setInterval(() => {
+                const sec = Math.floor((Date.now() - state.recordStart) / 1000);
+                const rt = document.getElementById('recTime'); if (rt) rt.textContent = formatDuration(sec);
+                if (sec > 60) { rec.stop(); state.recording = null; }
+            }, 200);
+        } catch (e) { showNotif('Ошибка', 'Нет доступа к микрофону'); }
+    });
+}
+const cancelVoice = document.getElementById('cancelVoice');
+if (cancelVoice) {
+    cancelVoice.addEventListener('click', () => {
+        if (state.recording) { state.recording.stop(); state.recording = null; }
+        const vr = document.getElementById('voiceRecording'); if (vr) vr.style.display = 'none';
+        clearInterval(state.recordTimer);
+    });
+}
+const sendVoice = document.getElementById('sendVoice');
+if (sendVoice) sendVoice.addEventListener('click', () => { if (state.recording) state.recording.stop(); state.recording = null; });
 
 /* ============ MENTIONS @ ============ */
-document.getElementById('messageInput').addEventListener('input', (e) => {
-    const val = e.target.value;
-    const cursor = e.target.selectionStart;
-    const before = val.slice(0, cursor);
-    const m = before.match(/@([a-zA-Z0-9_]*)$/);
-    const popup = document.getElementById('mentionsPopup');
-    if (m) {
-        const query = m[1].toLowerCase();
-        const conv = state.convs.find(c => c.id === state.activeConv);
-        if (conv && conv.members) {
-            const matches = conv.members.filter(mem => mem.login !== state.login && mem.login.toLowerCase().includes(query)).slice(0, 5);
-            if (matches.length) {
-                popup.style.display = 'block';
-                popup.innerHTML = matches.map(mem => `<div class="mention-item" data-login="${mem.login}"><div style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--blue));display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:700;">${initials(mem.name)}</div><span>${escapeHtml(mem.name)} <small style="color:var(--text-muted)">@${mem.login}</small></span></div>`).join('');
-                popup.querySelectorAll('.mention-item').forEach(item => item.addEventListener('click', () => {
-                    const login = item.dataset.login;
-                    e.target.value = before.replace(/@[a-zA-Z0-9_]*$/, '@' + login + ' ') + val.slice(cursor);
-                    popup.style.display = 'none';
-                    e.target.focus();
-                }));
-                return;
+const messageInput = document.getElementById('messageInput');
+if (messageInput) {
+    messageInput.addEventListener('input', (e) => {
+        const val = e.target.value;
+        const cursor = e.target.selectionStart;
+        const before = val.slice(0, cursor);
+        const m = before.match(/@([a-zA-Z0-9_]*)$/);
+        const popup = document.getElementById('mentionsPopup');
+        if (!popup) return;
+        if (m) {
+            const query = m[1].toLowerCase();
+            const conv = state.convs.find(c => c.id === state.activeConv);
+            if (conv && conv.members) {
+                const matches = conv.members.filter(mem => mem.login !== state.login && mem.login.toLowerCase().includes(query)).slice(0, 5);
+                if (matches.length) {
+                    popup.style.display = 'block';
+                    popup.innerHTML = matches.map(mem => `<div class="mention-item" data-login="${mem.login}"><div style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--blue));display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:700;">${initials(mem.name)}</div><span>${escapeHtml(mem.name)} <small style="color:var(--text-muted)">@${mem.login}</small></span></div>`).join('');
+                    popup.querySelectorAll('.mention-item').forEach(item => item.addEventListener('click', () => {
+                        const login = item.dataset.login;
+                        e.target.value = before.replace(/@[a-zA-Z0-9_]*$/, '@' + login + ' ') + val.slice(cursor);
+                        popup.style.display = 'none';
+                        e.target.focus();
+                    }));
+                    return;
+                }
             }
         }
-    }
-    popup.style.display = 'none';
-});
+        popup.style.display = 'none';
+    });
+}
 
 /* ============ SMART REPLIES ============ */
 function updateSmartReplies() {
     const conv = state.convs.find(c => c.id === state.activeConv);
     const sr = document.getElementById('smartReplies');
+    if (!sr) return;
     if (!conv || !conv.messages.length) { sr.style.display = 'none'; return; }
     const last = conv.messages[conv.messages.length - 1];
     if (last.own) { sr.style.display = 'none'; return; }
@@ -1320,26 +1454,33 @@ function updateSmartReplies() {
     sr.innerHTML = suggestions.slice(0, 4).map(s => `<button class="smart-reply-btn">${escapeHtml(s)}</button>`).join('');
     sr.style.display = 'flex';
     sr.querySelectorAll('.smart-reply-btn').forEach(b => b.addEventListener('click', () => {
-        document.getElementById('messageInput').value = b.textContent;
+        const input = document.getElementById('messageInput');
+        if (input) input.value = b.textContent;
         sendMessage();
         sr.style.display = 'none';
     }));
 }
 
 /* ============ KEYBOARD ============ */
-document.getElementById('messageInput').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
-});
+if (messageInput) {
+    messageInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+    });
+}
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
         document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
-        document.getElementById('mentionsPopup').style.display = 'none';
-        if (state.editingMsg) { state.editingMsg = null; document.getElementById('messageInput').value = ''; document.getElementById('replyBar').classList.remove('active'); }
+        const mp = document.getElementById('mentionsPopup'); if (mp) mp.style.display = 'none';
+        if (state.editingMsg) { 
+            state.editingMsg = null; 
+            const mi = document.getElementById('messageInput'); if (mi) mi.value = ''; 
+            const rb = document.getElementById('replyBar'); if (rb) rb.classList.remove('active'); 
+        }
     }
     if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
         e.preventDefault();
         openModal('searchModal');
-        setTimeout(() => document.getElementById('msgSearchInput').focus(), 100);
+        setTimeout(() => { const si = document.getElementById('msgSearchInput'); if (si) si.focus(); }, 100);
     }
     if (e.key === 'ArrowUp' && document.activeElement.id === 'messageInput' && !document.getElementById('messageInput').value.trim()) {
         e.preventDefault();
@@ -1348,8 +1489,8 @@ document.addEventListener('keydown', (e) => {
         const lastOwn = [...conv.messages].reverse().find(m => m.own && m.text);
         if (lastOwn) {
             state.editingMsg = lastOwn;
-            document.getElementById('messageInput').value = lastOwn.text;
-            document.getElementById('messageInput').focus();
+            const mi = document.getElementById('messageInput');
+            if (mi) { mi.value = lastOwn.text; mi.focus(); }
         }
     }
     state.lastActivity = Date.now();
@@ -1358,6 +1499,7 @@ document.addEventListener('keydown', (e) => {
 /* ============ FRIENDS ============ */
 function renderFriends() {
     const grid = document.getElementById('usersGrid');
+    if (!grid) return;
     const users = getAllUsersList().filter(u => u.login !== state.login);
     if (!users.length) { grid.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">Пока нет других пользователей</div>'; return; }
     grid.innerHTML = users.map(u => `<div class="user-row" data-login="${u.login}"><div class="user-row-avatar">${initials(u.nickname)}</div><div class="user-row-info"><div class="user-row-name">${escapeHtml(u.nickname)} ${getGlobalRoleBadge(u.role)}</div><div class="user-row-login">@${u.login}</div></div><div class="user-row-actions"><button data-action="dm" data-login="${u.login}" class="primary">Написать</button></div></div>`).join('');
@@ -1366,10 +1508,13 @@ function renderFriends() {
     }));
     grid.querySelectorAll('.user-row-avatar').forEach(a => a.addEventListener('click', () => openUserProfile(a.parentElement.dataset.login)));
 }
-document.getElementById('usersSearch').addEventListener('input', (e) => {
-    const q = e.target.value.toLowerCase();
-    document.querySelectorAll('.user-row').forEach(row => { row.style.display = row.dataset.login.includes(q) ? '' : 'none'; });
-});
+const usersSearch = document.getElementById('usersSearch');
+if (usersSearch) {
+    usersSearch.addEventListener('input', (e) => {
+        const q = e.target.value.toLowerCase();
+        document.querySelectorAll('.user-row').forEach(row => { row.style.display = row.dataset.login.includes(q) ? '' : 'none'; });
+    });
+}
 
 /* ============ DM ============ */
 function openOrCreateDM(login) {
@@ -1389,7 +1534,7 @@ function openOrCreateDM(login) {
         saveToStorage(); renderConvList();
     }
     closeModal('userProfileModal');
-    document.querySelector('.nav-item[data-tab="chats"]').click();
+    const chatsTab = document.querySelector('.nav-item[data-tab="chats"]'); if (chatsTab) chatsTab.click();
     setTimeout(() => openConv(conv.id), 200);
 }
 
@@ -1401,279 +1546,346 @@ function openUserProfile(login) {
     if (!user) return;
     const p = user.profile || {};
     const view = document.getElementById('userProfileView');
+    if (!view) return;
     let avatarHtml = '';
     if (p.avatarPhoto) avatarHtml = `<img class="avatar-photo" src="${p.avatarPhoto}">`;
     else if (p.avatarEmoji) avatarHtml = emojiImg(p.avatarEmoji, 'xxl');
     else avatarHtml = initials(user.nickname);
     view.innerHTML = `<div class="avatar-big">${avatarHtml}</div><h3>${escapeHtml(user.nickname)} ${getGlobalRoleBadge(user.role)}</h3><div class="handle">@${login}</div>${p.bio ? `<div class="bio">"${escapeHtml(p.bio)}"</div>` : ''}<div class="actions">${login !== state.login ? `<button class="btn-primary small" id="startDMBtn">Написать</button>` : '<div style="color:var(--text-muted);font-size:13px;">Это вы</div>'}</div>`;
     if (login !== state.login) {
-        document.getElementById('startDMBtn').onclick = () => openOrCreateDM(login);
+        const sdb = document.getElementById('startDMBtn'); if (sdb) sdb.onclick = () => openOrCreateDM(login);
     }
     openModal('userProfileModal');
 }
 
 /* ============ PIN SETTINGS ============ */
-document.getElementById('pinSettingsBtn').addEventListener('click', () => {
-    document.getElementById('pinInput').value = state.pin || '';
-    document.getElementById('pinAutolock').value = state.pinAutolock || 0;
-    openModal('pinModal');
-});
-document.getElementById('savePinBtn').addEventListener('click', () => {
-    const p = document.getElementById('pinInput').value;
-    if (p && !/^\d{4,8}$/.test(p)) { showNotif('Ошибка', 'PIN: 4-8 цифр'); return; }
-    state.pin = p || null;
-    state.pinAutolock = parseInt(document.getElementById('pinAutolock').value) || 0;
-    saveToStorage();
-    closeModal('pinModal');
-    showNotif(state.pin ? 'PIN установлен' : 'PIN отключён', '');
-    sound.play('success');
-});
+const pinSettingsBtn = document.getElementById('pinSettingsBtn');
+if (pinSettingsBtn) {
+    pinSettingsBtn.addEventListener('click', () => {
+        const pi = document.getElementById('pinInput'); if (pi) pi.value = state.pin || '';
+        const pa = document.getElementById('pinAutolock'); if (pa) pa.value = state.pinAutolock || 0;
+        openModal('pinModal');
+    });
+}
+const savePinBtn = document.getElementById('savePinBtn');
+if (savePinBtn) {
+    savePinBtn.addEventListener('click', () => {
+        const pi = document.getElementById('pinInput');
+        const p = pi ? pi.value : '';
+        if (p && !/^\d{4,8}$/.test(p)) { showNotif('Ошибка', 'PIN: 4-8 цифр'); return; }
+        state.pin = p || null;
+        const pa = document.getElementById('pinAutolock');
+        state.pinAutolock = pa ? parseInt(pa.value) || 0 : 0;
+        saveToStorage();
+        closeModal('pinModal');
+        showNotif(state.pin ? 'PIN установлен' : 'PIN отключён', '');
+        sound.play('success');
+    });
+}
 
 /* ============ NOTIF SETTINGS ============ */
-document.getElementById('notifSettingsBtn').addEventListener('click', () => {
-    document.querySelectorAll('input[name="notifMode"]').forEach(r => r.checked = r.value === state.notifMode);
-    openModal('notifModal');
-});
-document.getElementById('saveNotifBtn').addEventListener('click', () => {
-    const mode = document.querySelector('input[name="notifMode"]:checked').value;
-    state.notifMode = mode;
-    localStorage.setItem('lunar_notif_mode', mode);
-    if (mode !== 'off') requestNotificationPermission();
-    closeModal('notifModal');
-    showNotif('Сохранено', 'Режим: ' + (mode === 'all' ? 'все' : mode === 'mentions' ? 'упоминания' : 'выкл'));
-});
+const notifSettingsBtn = document.getElementById('notifSettingsBtn');
+if (notifSettingsBtn) {
+    notifSettingsBtn.addEventListener('click', () => {
+        document.querySelectorAll('input[name="notifMode"]').forEach(r => r.checked = r.value === state.notifMode);
+        openModal('notifModal');
+    });
+}
+const saveNotifBtn = document.getElementById('saveNotifBtn');
+if (saveNotifBtn) {
+    saveNotifBtn.addEventListener('click', () => {
+        const checked = document.querySelector('input[name="notifMode"]:checked');
+        if (!checked) return;
+        const mode = checked.value;
+        state.notifMode = mode;
+        localStorage.setItem('lunar_notif_mode', mode);
+        if (mode !== 'off') requestNotificationPermission();
+        closeModal('notifModal');
+        showNotif('Сохранено', 'Режим: ' + (mode === 'all' ? 'все' : mode === 'mentions' ? 'упоминания' : 'выкл'));
+    });
+}
 
 /* ============ WALLPAPER ============ */
-document.getElementById('wallpaperBtn').addEventListener('click', () => {
-    const grid = document.getElementById('wallpaperGrid');
-    grid.innerHTML = `<div class="wallpaper-choice wallpaper-none${!state.chatWallpapers[state.activeConv] ? ' selected' : ''}" data-wp="">✕</div>` +
-        wallpapers.filter(w => w).map(w => `<div class="wallpaper-choice${state.chatWallpapers[state.activeConv] === w ? ' selected' : ''}" data-wp="${w}" style="background:${w}"></div>`).join('');
-    grid.querySelectorAll('.wallpaper-choice').forEach(el => el.addEventListener('click', () => {
-        const wp = el.dataset.wp;
-        if (wp) state.chatWallpapers[state.activeConv] = wp;
-        else delete state.chatWallpapers[state.activeConv];
-        saveToStorage();
-        applyChatWallpaper(state.activeConv);
-        grid.querySelectorAll('.wallpaper-choice').forEach(x => x.classList.remove('selected'));
-        el.classList.add('selected');
-        sound.play('click');
-    }));
-    openModal('wallpaperModal');
-});
-document.getElementById('wallpaperInput').addEventListener('change', async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    try {
-        const dataUrl = await compressPhoto(file, 1024);
-        state.chatWallpapers[state.activeConv] = `url(${dataUrl}) center/cover`;
-        saveToStorage();
-        applyChatWallpaper(state.activeConv);
-        closeModal('wallpaperModal');
-        showNotif('Обои установлены', '');
-    } catch (err) { showNotif('Ошибка', err.message); }
-});
+const wallpaperBtn = document.getElementById('wallpaperBtn');
+if (wallpaperBtn) {
+    wallpaperBtn.addEventListener('click', () => {
+        const grid = document.getElementById('wallpaperGrid');
+        if (!grid) return;
+        grid.innerHTML = `<div class="wallpaper-choice wallpaper-none${!state.chatWallpapers[state.activeConv] ? ' selected' : ''}" data-wp="">✕</div>` +
+            wallpapers.filter(w => w).map(w => `<div class="wallpaper-choice${state.chatWallpapers[state.activeConv] === w ? ' selected' : ''}" data-wp="${w}" style="background:${w}"></div>`).join('');
+        grid.querySelectorAll('.wallpaper-choice').forEach(el => el.addEventListener('click', () => {
+            const wp = el.dataset.wp;
+            if (wp) state.chatWallpapers[state.activeConv] = wp;
+            else delete state.chatWallpapers[state.activeConv];
+            saveToStorage();
+            applyChatWallpaper(state.activeConv);
+            grid.querySelectorAll('.wallpaper-choice').forEach(x => x.classList.remove('selected'));
+            el.classList.add('selected');
+            sound.play('click');
+        }));
+        openModal('wallpaperModal');
+    });
+}
+const wallpaperInput = document.getElementById('wallpaperInput');
+if (wallpaperInput) {
+    wallpaperInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        try {
+            const dataUrl = await compressPhoto(file, 1024);
+            state.chatWallpapers[state.activeConv] = `url(${dataUrl}) center/cover`;
+            saveToStorage();
+            applyChatWallpaper(state.activeConv);
+            closeModal('wallpaperModal');
+            showNotif('Обои установлены', '');
+        } catch (err) { showNotif('Ошибка', err.message); }
+    });
+}
 
 /* ============ SOUND ============ */
-document.getElementById('soundSettingsBtn').addEventListener('click', () => {
-    document.getElementById('notifSoundSelect').value = sound.notifSound;
-    openModal('soundModal');
-});
-document.getElementById('saveSoundBtn').addEventListener('click', () => {
-    sound.notifSound = document.getElementById('notifSoundSelect').value;
-    localStorage.setItem('lunar_notif_sound', sound.notifSound);
-    closeModal('soundModal'); showNotif('Сохранено', '');
-    sound.play('notif');
-});
+const soundSettingsBtn = document.getElementById('soundSettingsBtn');
+if (soundSettingsBtn) {
+    soundSettingsBtn.addEventListener('click', () => {
+        const sel = document.getElementById('notifSoundSelect'); if (sel) sel.value = sound.notifSound;
+        openModal('soundModal');
+    });
+}
+const saveSoundBtn = document.getElementById('saveSoundBtn');
+if (saveSoundBtn) {
+    saveSoundBtn.addEventListener('click', () => {
+        const sel = document.getElementById('notifSoundSelect'); if (!sel) return;
+        sound.notifSound = sel.value;
+        localStorage.setItem('lunar_notif_sound', sound.notifSound);
+        closeModal('soundModal'); showNotif('Сохранено', '');
+        sound.play('notif');
+    });
+}
 
 /* ============ ACCOUNT ============ */
-document.getElementById('accountSettingsBtn').addEventListener('click', () => {
-    const info = document.getElementById('accountInfo');
-    info.innerHTML = `<b>@${state.login}</b><br>${escapeHtml(state.profile.nickname)}<br>Роль: ${state.role}<br>Сообщений: ${state.totalMessages}<br>Чатов: ${state.convs.length}`;
-    openModal('accountModal');
-});
-document.getElementById('exportDataBtn').addEventListener('click', () => {
-    const data = {
-        login: state.login, profile: state.profile, role: state.role,
-        convs: state.convs, totalMessages: state.totalMessages,
-        exportedAt: Date.now()
-    };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `lunar_${state.login}_${Date.now()}.json`;
-    a.click();
-    showNotif('Экспорт', 'Файл скачан');
-});
-document.getElementById('importDataBtn').addEventListener('click', () => document.getElementById('importFileInput').click());
-document.getElementById('importFileInput').addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-        try {
-            const data = JSON.parse(ev.target.result);
-            if (data.convs) state.convs = data.convs;
-            if (data.profile) state.profile = data.profile;
-            saveToStorage(); renderConvList(); updateProfileUI();
-            closeModal('accountModal');
-            showNotif('Импорт', 'Данные загружены');
-        } catch (err) { showNotif('Ошибка', 'Неверный формат файла'); }
-    };
-    reader.readAsText(file);
-    e.target.value = '';
-});
-document.getElementById('deleteAccountBtn').addEventListener('click', () => {
-    if (!confirm('Удалить аккаунт и ВСЕ данные? Это необратимо.')) return;
-    if (!confirm('Точно уверены?')) return;
-    const users = getUsers();
-    delete users[state.login];
-    saveUsers(users);
-    localStorage.removeItem('lunar_session');
-    localStorage.removeItem('lunar_contacts');
-    localStorage.removeItem('lunar_stats');
-    localStorage.removeItem('lunar_drafts');
-    localStorage.removeItem('lunar_wallpapers');
-    localStorage.removeItem('lunar_pin');
-    location.reload();
-});
+const accountSettingsBtn = document.getElementById('accountSettingsBtn');
+if (accountSettingsBtn) {
+    accountSettingsBtn.addEventListener('click', () => {
+        const info = document.getElementById('accountInfo');
+        if (info) info.innerHTML = `<b>@${state.login}</b><br>${escapeHtml(state.profile.nickname)}<br>Роль: ${state.role}<br>Сообщений: ${state.totalMessages}<br>Чатов: ${state.convs.length}`;
+        openModal('accountModal');
+    });
+}
+const exportDataBtn = document.getElementById('exportDataBtn');
+if (exportDataBtn) {
+    exportDataBtn.addEventListener('click', () => {
+        const data = { login: state.login, profile: state.profile, role: state.role, convs: state.convs, totalMessages: state.totalMessages, exportedAt: Date.now() };
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `lunar_${state.login}_${Date.now()}.json`;
+        a.click();
+        showNotif('Экспорт', 'Файл скачан');
+    });
+}
+const importDataBtn = document.getElementById('importDataBtn');
+const importFileInput = document.getElementById('importFileInput');
+if (importDataBtn && importFileInput) {
+    importDataBtn.addEventListener('click', () => importFileInput.click());
+    importFileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            try {
+                const data = JSON.parse(ev.target.result);
+                if (data.convs) state.convs = data.convs;
+                if (data.profile) state.profile = data.profile;
+                saveToStorage(); renderConvList(); updateProfileUI();
+                closeModal('accountModal');
+                showNotif('Импорт', 'Данные загружены');
+            } catch (err) { showNotif('Ошибка', 'Неверный формат файла'); }
+        };
+        reader.readAsText(file);
+        e.target.value = '';
+    });
+}
+const deleteAccountBtn = document.getElementById('deleteAccountBtn');
+if (deleteAccountBtn) {
+    deleteAccountBtn.addEventListener('click', () => {
+        if (!confirm('Удалить аккаунт и ВСЕ данные? Это необратимо.')) return;
+        if (!confirm('Точно уверены?')) return;
+        const users = getUsers();
+        delete users[state.login];
+        saveUsers(users);
+        localStorage.removeItem('lunar_session');
+        localStorage.removeItem('lunar_contacts');
+        localStorage.removeItem('lunar_stats');
+        localStorage.removeItem('lunar_drafts');
+        localStorage.removeItem('lunar_wallpapers');
+        localStorage.removeItem('lunar_pin');
+        location.reload();
+    });
+}
 
 /* ============ PROFILE CUSTOMIZE ============ */
-document.getElementById('editProfileBtn').addEventListener('click', () => { sound.play('click'); renderCustomizeModal(); openModal('customizeModal'); });
+const editProfileBtn = document.getElementById('editProfileBtn');
+if (editProfileBtn) editProfileBtn.addEventListener('click', () => { sound.play('click'); renderCustomizeModal(); openModal('customizeModal'); });
 function renderCustomizeModal() {
     state.tempProfile = { ...state.profile };
     updatePreview();
-    document.getElementById('customNickname').value = state.tempProfile.nickname;
-    document.getElementById('nicknameCount').textContent = state.tempProfile.nickname.length;
-    document.getElementById('customBio').value = state.tempProfile.bio || '';
-    document.getElementById('bioCount').textContent = (state.tempProfile.bio || '').length;
+    const cn = document.getElementById('customNickname'); if (cn) cn.value = state.tempProfile.nickname;
+    const nc = document.getElementById('nicknameCount'); if (nc) nc.textContent = state.tempProfile.nickname.length;
+    const cb = document.getElementById('customBio'); if (cb) cb.value = state.tempProfile.bio || '';
+    const bc = document.getElementById('bioCount'); if (bc) bc.textContent = (state.tempProfile.bio || '').length;
     document.querySelectorAll('.avatar-type-switch button').forEach(b => b.classList.toggle('active', b.dataset.avatarType === state.tempProfile.avatarType));
-    document.getElementById('avatarPhotoSection').style.display = state.tempProfile.avatarType === 'photo' ? '' : 'none';
-    document.getElementById('avatarEmojiSection').style.display = state.tempProfile.avatarType === 'emoji' ? '' : 'none';
-    document.getElementById('avatarColorSection').style.display = state.tempProfile.avatarType === 'color' ? '' : 'none';
+    const aps = document.getElementById('avatarPhotoSection'); if (aps) aps.style.display = state.tempProfile.avatarType === 'photo' ? '' : 'none';
+    const aes = document.getElementById('avatarEmojiSection'); if (aes) aes.style.display = state.tempProfile.avatarType === 'emoji' ? '' : 'none';
+    const acs = document.getElementById('avatarColorSection'); if (acs) acs.style.display = state.tempProfile.avatarType === 'color' ? '' : 'none';
     if (state.tempProfile.avatarPhoto) {
-        document.getElementById('photoPreviewBox').style.display = 'flex';
-        document.getElementById('photoUploadZone').style.display = 'none';
-        document.getElementById('photoPreviewImg').src = state.tempProfile.avatarPhoto;
-        document.getElementById('photoFilename').textContent = state.tempProfile.avatarPhotoName || 'avatar.jpg';
-        document.getElementById('photoFilesize').textContent = formatFileSize(state.tempProfile.avatarPhotoSize || 0);
+        const ppb = document.getElementById('photoPreviewBox'); if (ppb) ppb.style.display = 'flex';
+        const puz = document.getElementById('photoUploadZone'); if (puz) puz.style.display = 'none';
+        const ppi = document.getElementById('photoPreviewImg'); if (ppi) ppi.src = state.tempProfile.avatarPhoto;
+        const pfn = document.getElementById('photoFilename'); if (pfn) pfn.textContent = state.tempProfile.avatarPhotoName || 'avatar.jpg';
+        const pfs = document.getElementById('photoFilesize'); if (pfs) pfs.textContent = formatFileSize(state.tempProfile.avatarPhotoSize || 0);
     } else {
-        document.getElementById('photoPreviewBox').style.display = 'none';
-        document.getElementById('photoUploadZone').style.display = '';
+        const ppb = document.getElementById('photoPreviewBox'); if (ppb) ppb.style.display = 'none';
+        const puz = document.getElementById('photoUploadZone'); if (puz) puz.style.display = '';
     }
     const ep = document.getElementById('emojiPicker');
-    ep.innerHTML = avatarEmojis.map(e => `<button class="emoji-choice${e === state.tempProfile.avatarEmoji ? ' selected' : ''}" data-emoji="${e}">${emojiImg(e)}</button>`).join('');
-    ep.querySelectorAll('.emoji-choice').forEach(el => el.addEventListener('click', () => {
-        ep.querySelectorAll('.emoji-choice').forEach(x => x.classList.remove('selected'));
-        el.classList.add('selected');
-        state.tempProfile.avatarEmoji = el.dataset.emoji;
-        updatePreview(); sound.play('click');
-    }));
+    if (ep) {
+        ep.innerHTML = avatarEmojis.map(e => `<button class="emoji-choice${e === state.tempProfile.avatarEmoji ? ' selected' : ''}" data-emoji="${e}">${emojiImg(e)}</button>`).join('');
+        ep.querySelectorAll('.emoji-choice').forEach(el => el.addEventListener('click', () => {
+            ep.querySelectorAll('.emoji-choice').forEach(x => x.classList.remove('selected'));
+            el.classList.add('selected');
+            state.tempProfile.avatarEmoji = el.dataset.emoji;
+            updatePreview(); sound.play('click');
+        }));
+    }
     const cg = document.getElementById('avatarColorGrid');
-    cg.innerHTML = avatarColors.map((c, i) => `<div class="color-swatch${i === state.tempProfile.avatarColor ? ' selected' : ''}" data-idx="${i}" style="background: linear-gradient(135deg, ${c[0]}, ${c[1]})"></div>`).join('');
-    cg.querySelectorAll('.color-swatch').forEach(el => el.addEventListener('click', () => {
-        cg.querySelectorAll('.color-swatch').forEach(x => x.classList.remove('selected'));
-        el.classList.add('selected');
-        state.tempProfile.avatarColor = parseInt(el.dataset.idx);
-        updatePreview(); sound.play('click');
-    }));
+    if (cg) {
+        cg.innerHTML = avatarColors.map((c, i) => `<div class="color-swatch${i === state.tempProfile.avatarColor ? ' selected' : ''}" data-idx="${i}" style="background: linear-gradient(135deg, ${c[0]}, ${c[1]})"></div>`).join('');
+        cg.querySelectorAll('.color-swatch').forEach(el => el.addEventListener('click', () => {
+            cg.querySelectorAll('.color-swatch').forEach(x => x.classList.remove('selected'));
+            el.classList.add('selected');
+            state.tempProfile.avatarColor = parseInt(el.dataset.idx);
+            updatePreview(); sound.play('click');
+        }));
+    }
     const bg = document.getElementById('bannerGrid');
-    bg.innerHTML = banners.map(b => `<div class="banner-choice${b.id === state.tempProfile.banner ? ' selected' : ''}" data-banner="${b.id}" style="background: ${b.css}"></div>`).join('');
-    bg.querySelectorAll('.banner-choice').forEach(el => el.addEventListener('click', () => {
-        bg.querySelectorAll('.banner-choice').forEach(x => x.classList.remove('selected'));
-        el.classList.add('selected');
-        state.tempProfile.banner = el.dataset.banner;
-        updatePreview(); sound.play('click');
-    }));
+    if (bg) {
+        bg.innerHTML = banners.map(b => `<div class="banner-choice${b.id === state.tempProfile.banner ? ' selected' : ''}" data-banner="${b.id}" style="background: ${b.css}"></div>`).join('');
+        bg.querySelectorAll('.banner-choice').forEach(el => el.addEventListener('click', () => {
+            bg.querySelectorAll('.banner-choice').forEach(x => x.classList.remove('selected'));
+            el.classList.add('selected');
+            state.tempProfile.banner = el.dataset.banner;
+            updatePreview(); sound.play('click');
+        }));
+    }
     const fg = document.getElementById('frameGrid');
-    fg.innerHTML = frames.map(f => `<div class="frame-choice${f.id === state.tempProfile.frame ? ' selected' : ''}" data-frame="${f.id}"><div class="frame-circle ${f.class}"></div></div>`).join('');
-    fg.querySelectorAll('.frame-choice').forEach(el => el.addEventListener('click', () => {
-        fg.querySelectorAll('.frame-choice').forEach(x => x.classList.remove('selected'));
-        el.classList.add('selected');
-        state.tempProfile.frame = el.dataset.frame;
-        updatePreview(); sound.play('click');
-    }));
+    if (fg) {
+        fg.innerHTML = frames.map(f => `<div class="frame-choice${f.id === state.tempProfile.frame ? ' selected' : ''}" data-frame="${f.id}"><div class="frame-circle ${f.class}"></div></div>`).join('');
+        fg.querySelectorAll('.frame-choice').forEach(el => el.addEventListener('click', () => {
+            fg.querySelectorAll('.frame-choice').forEach(x => x.classList.remove('selected'));
+            el.classList.add('selected');
+            state.tempProfile.frame = el.dataset.frame;
+            updatePreview(); sound.play('click');
+        }));
+    }
 }
 function updatePreview() {
     const p = state.tempProfile;
-    document.getElementById('previewName').textContent = p.nickname || 'Никнейм';
-    document.getElementById('previewBio').textContent = p.bio || '';
+    const pn = document.getElementById('previewName'); if (pn) pn.textContent = p.nickname || 'Никнейм';
+    const pb = document.getElementById('previewBio'); if (pb) pb.textContent = p.bio || '';
     const b = banners.find(x => x.id === p.banner);
-    document.getElementById('previewBanner').style.background = b ? b.css : banners[0].css;
+    const pba = document.getElementById('previewBanner'); if (pba) pba.style.background = b ? b.css : banners[0].css;
     const a = document.getElementById('previewAvatar');
+    if (!a) return;
     if (p.avatarType === 'photo' && p.avatarPhoto) { a.innerHTML = `<img class="avatar-photo" src="${p.avatarPhoto}">`; a.style.background = 'var(--bg-tertiary)'; }
     else if (p.avatarType === 'emoji') { a.innerHTML = `<div class="avatar-emoji-wrap">${emojiImg(p.avatarEmoji)}</div>`; a.style.background = 'linear-gradient(135deg,#38bdf8,#60a5fa)'; }
     else { a.textContent = (p.nickname || 'A').charAt(0).toUpperCase(); const c = avatarColors[p.avatarColor]; a.style.background = `linear-gradient(135deg,${c[0]},${c[1]})`; }
     const fc = frames.find(f => f.id === p.frame);
     a.className = 'preview-avatar ' + (fc ? fc.class : 'avatar-frame-none');
 }
-document.getElementById('customNickname').addEventListener('input', (e) => {
-    document.getElementById('nicknameCount').textContent = e.target.value.length;
-    state.tempProfile.nickname = e.target.value; updatePreview();
-});
-document.getElementById('customBio').addEventListener('input', (e) => {
-    document.getElementById('bioCount').textContent = e.target.value.length;
-    state.tempProfile.bio = e.target.value; updatePreview();
-});
+const customNickname = document.getElementById('customNickname');
+if (customNickname) {
+    customNickname.addEventListener('input', (e) => {
+        const nc = document.getElementById('nicknameCount'); if (nc) nc.textContent = e.target.value.length;
+        state.tempProfile.nickname = e.target.value; updatePreview();
+    });
+}
+const customBio = document.getElementById('customBio');
+if (customBio) {
+    customBio.addEventListener('input', (e) => {
+        const bc = document.getElementById('bioCount'); if (bc) bc.textContent = e.target.value.length;
+        state.tempProfile.bio = e.target.value; updatePreview();
+    });
+}
 document.querySelectorAll('.avatar-type-switch button').forEach(btn => btn.addEventListener('click', () => {
     sound.play('click');
     document.querySelectorAll('.avatar-type-switch button').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     state.tempProfile.avatarType = btn.dataset.avatarType;
-    document.getElementById('avatarPhotoSection').style.display = state.tempProfile.avatarType === 'photo' ? '' : 'none';
-    document.getElementById('avatarEmojiSection').style.display = state.tempProfile.avatarType === 'emoji' ? '' : 'none';
-    document.getElementById('avatarColorSection').style.display = state.tempProfile.avatarType === 'color' ? '' : 'none';
+    const aps = document.getElementById('avatarPhotoSection'); if (aps) aps.style.display = state.tempProfile.avatarType === 'photo' ? '' : 'none';
+    const aes = document.getElementById('avatarEmojiSection'); if (aes) aes.style.display = state.tempProfile.avatarType === 'emoji' ? '' : 'none';
+    const acs = document.getElementById('avatarColorSection'); if (acs) acs.style.display = state.tempProfile.avatarType === 'color' ? '' : 'none';
     updatePreview();
 }));
 const puz = document.getElementById('photoUploadZone');
 const pinp = document.getElementById('photoInput');
-puz.addEventListener('click', () => pinp.click());
-puz.addEventListener('dragover', (e) => { e.preventDefault(); puz.classList.add('dragover'); });
-puz.addEventListener('dragleave', () => puz.classList.remove('dragover'));
-puz.addEventListener('drop', async (e) => { e.preventDefault(); puz.classList.remove('dragover'); if (e.dataTransfer.files[0]) await handlePhotoUpload(e.dataTransfer.files[0]); });
-pinp.addEventListener('change', async (e) => { if (e.target.files[0]) await handlePhotoUpload(e.target.files[0]); e.target.value = ''; });
+if (puz && pinp) {
+    puz.addEventListener('click', () => pinp.click());
+    puz.addEventListener('dragover', (e) => { e.preventDefault(); puz.classList.add('dragover'); });
+    puz.addEventListener('dragleave', () => puz.classList.remove('dragover'));
+    puz.addEventListener('drop', async (e) => { e.preventDefault(); puz.classList.remove('dragover'); if (e.dataTransfer.files[0]) await handlePhotoUpload(e.dataTransfer.files[0]); });
+    pinp.addEventListener('change', async (e) => { if (e.target.files[0]) await handlePhotoUpload(e.target.files[0]); e.target.value = ''; });
+}
 async function handlePhotoUpload(file) {
     try {
-        puz.innerHTML = '<p>Обработка...</p>';
+        if (puz) puz.innerHTML = '<p>Обработка...</p>';
         const dataUrl = await compressPhoto(file, 256);
         state.tempProfile.avatarPhoto = dataUrl;
         state.tempProfile.avatarPhotoName = file.name;
         state.tempProfile.avatarPhotoSize = file.size;
         state.tempProfile.avatarType = 'photo';
-        document.getElementById('avatarPhotoSection').style.display = '';
-        document.getElementById('photoPreviewBox').style.display = 'flex';
-        document.getElementById('photoPreviewImg').src = dataUrl;
-        document.getElementById('photoFilename').textContent = file.name;
-        document.getElementById('photoFilesize').textContent = formatFileSize(file.size);
-        document.getElementById('photoUploadZone').style.display = 'none';
-        puz.innerHTML = '<p>Нажмите или перетащите фото</p><div class="hint">PNG, JPG до 5 МБ</div>';
+        const aps = document.getElementById('avatarPhotoSection'); if (aps) aps.style.display = '';
+        const ppb = document.getElementById('photoPreviewBox'); if (ppb) ppb.style.display = 'flex';
+        const ppi = document.getElementById('photoPreviewImg'); if (ppi) ppi.src = dataUrl;
+        const pfn = document.getElementById('photoFilename'); if (pfn) pfn.textContent = file.name;
+        const pfs = document.getElementById('photoFilesize'); if (pfs) pfs.textContent = formatFileSize(file.size);
+        if (puz) {
+            puz.style.display = 'none';
+            puz.innerHTML = '<p>Нажмите или перетащите фото</p><div class="hint">PNG, JPG до 5 МБ</div>';
+        }
         document.querySelectorAll('.avatar-type-switch button').forEach(b => b.classList.toggle('active', b.dataset.avatarType === 'photo'));
         updatePreview(); sound.play('photo');
     } catch (e) { showNotif('Ошибка', e.message); }
 }
-document.getElementById('photoRemoveBtn').addEventListener('click', () => {
-    state.tempProfile.avatarPhoto = null;
-    state.tempProfile.avatarType = 'emoji';
-    document.querySelectorAll('.avatar-type-switch button').forEach(b => b.classList.toggle('active', b.dataset.avatarType === 'emoji'));
-    document.getElementById('avatarPhotoSection').style.display = 'none';
-    document.getElementById('avatarEmojiSection').style.display = '';
-    document.getElementById('photoPreviewBox').style.display = 'none';
-    document.getElementById('photoUploadZone').style.display = '';
-    updatePreview();
-});
-document.getElementById('saveCustomizationBtn').addEventListener('click', () => {
-    const n = state.tempProfile.nickname.trim();
-    if (!n || n.length < 2) { showNotif('Ошибка', 'Никнейм 2+ символа'); return; }
-    state.profile = { ...state.tempProfile, nickname: n };
-    state.user = n;
-    updateProfileUI(); saveToStorage(); closeModal('customizeModal');
-    sound.play('success');
-    if (state.activeConv) renderMessages();
-    renderConvList();
-});
+const photoRemoveBtn = document.getElementById('photoRemoveBtn');
+if (photoRemoveBtn) {
+    photoRemoveBtn.addEventListener('click', () => {
+        state.tempProfile.avatarPhoto = null;
+        state.tempProfile.avatarType = 'emoji';
+        document.querySelectorAll('.avatar-type-switch button').forEach(b => b.classList.toggle('active', b.dataset.avatarType === 'emoji'));
+        const aps = document.getElementById('avatarPhotoSection'); if (aps) aps.style.display = 'none';
+        const aes = document.getElementById('avatarEmojiSection'); if (aes) aes.style.display = '';
+        const ppb = document.getElementById('photoPreviewBox'); if (ppb) ppb.style.display = 'none';
+        const puz = document.getElementById('photoUploadZone'); if (puz) puz.style.display = '';
+        updatePreview();
+    });
+}
+const saveCustomizationBtn = document.getElementById('saveCustomizationBtn');
+if (saveCustomizationBtn) {
+    saveCustomizationBtn.addEventListener('click', () => {
+        const n = state.tempProfile.nickname.trim();
+        if (!n || n.length < 2) { showNotif('Ошибка', 'Никнейм 2+ символа'); return; }
+        state.profile = { ...state.tempProfile, nickname: n };
+        state.user = n;
+        updateProfileUI(); saveToStorage(); closeModal('customizeModal');
+        sound.play('success');
+        if (state.activeConv) renderMessages();
+        renderConvList();
+    });
+}
 const qpi = document.createElement('input');
 qpi.type = 'file'; qpi.accept = 'image/*'; qpi.style.display = 'none';
 document.body.appendChild(qpi);
-document.getElementById('quickUploadPhotoBtn').addEventListener('click', () => qpi.click());
+const quickUploadPhotoBtn = document.getElementById('quickUploadPhotoBtn');
+if (quickUploadPhotoBtn) quickUploadPhotoBtn.addEventListener('click', () => qpi.click());
 qpi.addEventListener('change', async (e) => {
     if (!e.target.files[0]) return;
     try {
@@ -1685,31 +1897,41 @@ qpi.addEventListener('change', async (e) => {
     } catch (err) { showNotif('Ошибка', err.message); }
     e.target.value = '';
 });
-document.getElementById('quickRemovePhotoBtn').addEventListener('click', () => {
-    state.profile.avatarPhoto = null;
-    state.profile.avatarType = 'emoji';
-    updateProfileUI(); saveToStorage();
-});
+const quickRemovePhotoBtn = document.getElementById('quickRemovePhotoBtn');
+if (quickRemovePhotoBtn) {
+    quickRemovePhotoBtn.addEventListener('click', () => {
+        state.profile.avatarPhoto = null;
+        state.profile.avatarType = 'emoji';
+        updateProfileUI(); saveToStorage();
+    });
+}
 
 /* ============ FEED ============ */
-document.getElementById('newPostBtn').addEventListener('click', () => document.getElementById('newPost').style.display = '');
-document.getElementById('cancelPost').addEventListener('click', () => { document.getElementById('newPost').style.display = 'none'; document.getElementById('postContent').value = ''; });
-document.getElementById('publishPost').addEventListener('click', () => {
-    const text = document.getElementById('postContent').value.trim();
-    if (!text) return;
-    state.totalPosts++;
-    let ab = 'linear-gradient(135deg,#38bdf8,#60a5fa)';
-    if (state.profile.avatarType === 'color') ab = `linear-gradient(135deg,${avatarColors[state.profile.avatarColor][0]},${avatarColors[state.profile.avatarColor][1]})`;
-    const post = { id: Date.now(), author: state.profile.nickname, login: state.login, text, time: Date.now(), likes: 0, liked: false, comments: [] };
-    const posts = JSON.parse(localStorage.getItem('lunar_posts') || '[]');
-    posts.unshift(post);
-    localStorage.setItem('lunar_posts', JSON.stringify(posts));
-    document.getElementById('postContent').value = '';
-    document.getElementById('newPost').style.display = 'none';
-    renderPosts(); sound.play('send');
-});
+const newPostBtn = document.getElementById('newPostBtn');
+if (newPostBtn) newPostBtn.addEventListener('click', () => { const np = document.getElementById('newPost'); if (np) np.style.display = ''; });
+const cancelPost = document.getElementById('cancelPost');
+if (cancelPost) cancelPost.addEventListener('click', () => { const np = document.getElementById('newPost'); if (np) np.style.display = 'none'; const pc = document.getElementById('postContent'); if (pc) pc.value = ''; });
+const publishPost = document.getElementById('publishPost');
+if (publishPost) {
+    publishPost.addEventListener('click', () => {
+        const pc = document.getElementById('postContent');
+        const text = pc ? pc.value.trim() : '';
+        if (!text) return;
+        state.totalPosts++;
+        let ab = 'linear-gradient(135deg,#38bdf8,#60a5fa)';
+        if (state.profile.avatarType === 'color') ab = `linear-gradient(135deg,${avatarColors[state.profile.avatarColor][0]},${avatarColors[state.profile.avatarColor][1]})`;
+        const post = { id: Date.now(), author: state.profile.nickname, login: state.login, text, time: Date.now(), likes: 0, liked: false, comments: [] };
+        const posts = JSON.parse(localStorage.getItem('lunar_posts') || '[]');
+        posts.unshift(post);
+        localStorage.setItem('lunar_posts', JSON.stringify(posts));
+        if (pc) pc.value = '';
+        const np = document.getElementById('newPost'); if (np) np.style.display = 'none';
+        renderPosts(); sound.play('send');
+    });
+}
 function renderPosts() {
     const postsEl = document.getElementById('posts');
+    if (!postsEl) return;
     const posts = JSON.parse(localStorage.getItem('lunar_posts') || '[]');
     if (!posts.length) { postsEl.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">Нет постов</div>'; return; }
     postsEl.innerHTML = posts.map(p => `<div class="post" data-post="${p.id}"><div class="post-header"><div class="post-avatar" data-user="${p.login}">${initials(p.author)}</div><div class="post-meta"><div class="post-author">${escapeHtml(p.author)}</div><div class="post-time">${formatTime(p.time)}</div></div></div><div class="post-content">${escapeHtml(p.text)}</div><div class="post-actions"><button class="post-action like-btn${p.liked ? ' liked' : ''}" data-post="${p.id}">${emojiImg('❤️')} <span>${p.likes || 0}</span></button><button class="post-action comment-btn" data-post="${p.id}">💬 <span>${(p.comments || []).length}</span></button></div></div>`).join('');
@@ -1727,31 +1949,37 @@ function openComments(postId) {
     const post = posts.find(x => x.id == postId);
     if (!post) return;
     const list = document.getElementById('commentsList');
+    if (!list) return;
     if (!post.comments || !post.comments.length) { list.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:20px;">Пока нет комментариев</div>'; }
     else {
         list.innerHTML = post.comments.map(c => `<div class="comment-item"><div class="comment-avatar">${initials(c.author)}</div><div class="comment-body"><div class="comment-author">${escapeHtml(c.author)}</div><div class="comment-text">${escapeHtml(c.text)}</div><div class="comment-time">${formatTime(c.time)}</div></div></div>`).join('');
     }
     openModal('commentModal');
 }
-document.getElementById('sendCommentBtn').addEventListener('click', () => {
-    const text = document.getElementById('commentInput').value.trim();
-    if (!text) return;
-    const posts = JSON.parse(localStorage.getItem('lunar_posts') || '[]');
-    const post = posts.find(x => x.id == state.activeCommentPost);
-    if (!post) return;
-    if (!post.comments) post.comments = [];
-    post.comments.push({ author: state.profile.nickname, login: state.login, text, time: Date.now() });
-    localStorage.setItem('lunar_posts', JSON.stringify(posts));
-    document.getElementById('commentInput').value = '';
-    openComments(state.activeCommentPost);
-    renderPosts(); sound.play('send');
-});
+const sendCommentBtn = document.getElementById('sendCommentBtn');
+if (sendCommentBtn) {
+    sendCommentBtn.addEventListener('click', () => {
+        const ci = document.getElementById('commentInput');
+        const text = ci ? ci.value.trim() : '';
+        if (!text) return;
+        const posts = JSON.parse(localStorage.getItem('lunar_posts') || '[]');
+        const post = posts.find(x => x.id == state.activeCommentPost);
+        if (!post) return;
+        if (!post.comments) post.comments = [];
+        post.comments.push({ author: state.profile.nickname, login: state.login, text, time: Date.now() });
+        localStorage.setItem('lunar_posts', JSON.stringify(posts));
+        if (ci) ci.value = '';
+        openComments(state.activeCommentPost);
+        renderPosts(); sound.play('send');
+    });
+}
 
 /* ============ ПОДАРКИ (LOGIC) ============ */
 function renderGifts() {
     const grid = document.getElementById('giftsGrid');
-    document.getElementById('balanceAmount').textContent = state.balance;
-    document.getElementById('ownedCount').textContent = state.ownedGifts.length;
+    if (!grid) return;
+    const ba = document.getElementById('balanceAmount'); if (ba) ba.textContent = state.balance;
+    const oc = document.getElementById('ownedCount'); if (oc) oc.textContent = state.ownedGifts.length;
     if (state.giftTab === 'owned') {
         if (!state.ownedGifts.length) {
             grid.innerHTML = `<div class="gifts-empty" style="grid-column: 1/-1;"><div style="font-size:40px;">🎁</div><div style="font-size: 16px; font-weight: 600; color: var(--text-secondary);">Подарков пока нет</div></div>`;
@@ -1763,7 +1991,7 @@ function renderGifts() {
                 <div class="g-name">${escapeHtml(g.name)}</div>
                 <div class="g-collection">${escapeHtml(g.collection)}</div>
                 <div class="g-rarity rarity-${g.rarity}">${rarityLabel[g.rarity]}</div>
-                <div class="g-price">${emojiImg('💎', 'small')} ${g.price}</div>
+                <div class="g-price">💎 ${g.price}</div>
                 <div class="g-owned" style="background: var(--emerald);">#${g.number}</div>
             </div>`).join('');
         return;
@@ -1774,7 +2002,7 @@ function renderGifts() {
             <div class="g-name">${escapeHtml(g.name)}</div>
             <div class="g-collection">${escapeHtml(g.collection)}</div>
             <div class="g-rarity rarity-${g.rarity}">${rarityLabel[g.rarity]}</div>
-            <div class="g-price">${emojiImg('💎', 'small')} ${g.price}</div>
+            <div class="g-price">💎 ${g.price}</div>
         </div>`).join('');
     grid.querySelectorAll('.gift-item').forEach(el => {
         el.addEventListener('click', () => {
@@ -1792,14 +2020,15 @@ document.querySelectorAll('.gifts-tab').forEach(tab => {
         renderGifts();
     });
 });
-document.getElementById('topupBtn').addEventListener('click', () => { sound.play('click'); openModal('topupModal'); });
+const topupBtn = document.getElementById('topupBtn');
+if (topupBtn) topupBtn.addEventListener('click', () => { sound.play('click'); openModal('topupModal'); });
 document.querySelectorAll('.topup-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         const amount = parseInt(btn.dataset.amount);
         state.balance += amount;
         saveToStorage();
-        document.getElementById('balanceAmount').textContent = state.balance;
-        document.getElementById('modalBalance').textContent = state.balance + ' 💎';
+        const ba = document.getElementById('balanceAmount'); if (ba) ba.textContent = state.balance;
+        const mb = document.getElementById('modalBalance'); if (mb) mb.textContent = state.balance + ' 💎';
         sound.play('success');
         showNotif('Изумруды пополнены', `+${amount} 💎`);
         closeModal('topupModal');
@@ -1813,47 +2042,54 @@ function openSendGiftModal(gift) {
     const recipientConv = state.convs.find(c => c.id === state.activeConv);
     state.giftRecipientConv = recipientConv;
     const preview = document.getElementById('giftPreview');
-    preview.innerHTML = `<img src="${gift.img}" alt="${gift.name}" style="width:100px;height:100px;object-fit:contain;"><div class="gp-name">${escapeHtml(gift.name)}</div><div class="gp-collection">${escapeHtml(gift.collection)}</div><div class="gp-rarity rarity-${gift.rarity}">${rarityLabel[gift.rarity]}</div><div class="gp-price">${emojiImg('💎')} ${gift.price}</div>`;
-    document.getElementById('giftRecipient').value = recipientConv ? recipientConv.name : 'Выберите чат';
-    document.getElementById('giftMessage').value = '';
-    document.getElementById('modalBalance').textContent = state.balance + ' 💎';
+    if (preview) preview.innerHTML = `<img src="${gift.img}" alt="${gift.name}" style="width:100px;height:100px;object-fit:contain;"><div class="gp-name">${escapeHtml(gift.name)}</div><div class="gp-collection">${escapeHtml(gift.collection)}</div><div class="gp-rarity rarity-${gift.rarity}">${rarityLabel[gift.rarity]}</div><div class="gp-price">💎 ${gift.price}</div>`;
+    const gr = document.getElementById('giftRecipient'); if (gr) gr.value = recipientConv ? recipientConv.name : 'Выберите чат';
+    const gm = document.getElementById('giftMessage'); if (gm) gm.value = '';
+    const mb = document.getElementById('modalBalance'); if (mb) mb.textContent = state.balance + ' 💎';
     openModal('sendGiftModal');
 }
-document.getElementById('sendGiftFromChatBtn').addEventListener('click', () => {
-    if (!state.activeConv) { sound.play('error'); showNotif('Ошибка', 'Сначала откройте чат'); return; }
-    sound.play('click');
-    document.querySelector('.nav-item[data-tab="gifts"]').click();
-    setTimeout(() => { showNotif('Выберите подарок', 'Нажмите на подарок'); }, 300);
-});
-document.getElementById('confirmSendGiftBtn').addEventListener('click', () => {
-    const gift = state.pendingGift, conv = state.giftRecipientConv;
-    if (!gift) return;
-    if (!conv) { sound.play('error'); showNotif('Ошибка', 'Откройте чат'); return; }
-    if (state.balance < gift.price) { sound.play('error'); showNotif('Недостаточно изумрудов', 'Пополните баланс'); return; }
-    state.balance -= gift.price;
-    const giftNumber = Math.floor(Math.random() * 9000) + 1000;
-    const giftMessage = document.getElementById('giftMessage').value.trim();
-    const giftData = { id: gift.id, name: gift.name, img: gift.img, collection: gift.collection, rarity: gift.rarity, price: gift.price, number: giftNumber };
-    const msg = { id: Date.now() + Math.random(), author: state.profile.nickname, text: giftMessage, time: Date.now(), own: true, reactions: [], gift: giftData };
-    conv.messages.push(msg);
-    state.ownedGifts.push({ ...giftData, receivedAt: Date.now(), from: conv.name });
-    state.userProfileGifts.push({ ...giftData, from: conv.name, receivedAt: Date.now() });
-    saveToStorage();
-    document.getElementById('balanceAmount').textContent = state.balance;
-    document.getElementById('statGifts').textContent = state.userProfileGifts.length;
-    if (gift.rarity === 'legend') { sound.play('legend'); showNotif('🎉 Легендарный подарок!', `${gift.name} → ${conv.name}`, '', true); }
-    else { sound.play('gift'); showNotif('Подарок отправлен', `${gift.name} → ${conv.name}`, '', true); }
-    closeModal('sendGiftModal');
-    state.pendingGift = null; state.giftRecipientConv = null;
-    if (state.activeConv === conv.id) renderMessages();
-    renderConvList(); renderGifts(); renderProfileGifts();
-    setTimeout(() => { document.querySelector('.nav-item[data-tab="chats"]').click(); setTimeout(() => openConv(conv.id), 150); }, 600);
-});
+const sendGiftFromChatBtn = document.getElementById('sendGiftFromChatBtn');
+if (sendGiftFromChatBtn) {
+    sendGiftFromChatBtn.addEventListener('click', () => {
+        if (!state.activeConv) { sound.play('error'); showNotif('Ошибка', 'Сначала откройте чат'); return; }
+        sound.play('click');
+        const giftsTab = document.querySelector('.nav-item[data-tab="gifts"]'); if (giftsTab) giftsTab.click();
+        setTimeout(() => { showNotif('Выберите подарок', 'Нажмите на подарок'); }, 300);
+    });
+}
+const confirmSendGiftBtn = document.getElementById('confirmSendGiftBtn');
+if (confirmSendGiftBtn) {
+    confirmSendGiftBtn.addEventListener('click', () => {
+        const gift = state.pendingGift, conv = state.giftRecipientConv;
+        if (!gift) return;
+        if (!conv) { sound.play('error'); showNotif('Ошибка', 'Откройте чат'); return; }
+        if (state.balance < gift.price) { sound.play('error'); showNotif('Недостаточно изумрудов', 'Пополните баланс'); return; }
+        state.balance -= gift.price;
+        const giftNumber = Math.floor(Math.random() * 9000) + 1000;
+        const gm = document.getElementById('giftMessage');
+        const giftMessage = gm ? gm.value.trim() : '';
+        const giftData = { id: gift.id, name: gift.name, img: gift.img, collection: gift.collection, rarity: gift.rarity, price: gift.price, number: giftNumber };
+        const msg = { id: Date.now() + Math.random(), author: state.profile.nickname, text: giftMessage, time: Date.now(), own: true, reactions: [], gift: giftData };
+        conv.messages.push(msg);
+        state.ownedGifts.push({ ...giftData, receivedAt: Date.now(), from: conv.name });
+        state.userProfileGifts.push({ ...giftData, from: conv.name, receivedAt: Date.now() });
+        saveToStorage();
+        const ba = document.getElementById('balanceAmount'); if (ba) ba.textContent = state.balance;
+        const sg = document.getElementById('statGifts'); if (sg) sg.textContent = state.userProfileGifts.length;
+        if (gift.rarity === 'legend') { sound.play('legend'); showNotif('🎉 Легендарный подарок!', `${gift.name} → ${conv.name}`, '', true); }
+        else { sound.play('gift'); showNotif('Подарок отправлен', `${gift.name} → ${conv.name}`, '', true); }
+        closeModal('sendGiftModal');
+        state.pendingGift = null; state.giftRecipientConv = null;
+        if (state.activeConv === conv.id) renderMessages();
+        renderConvList(); renderGifts(); renderProfileGifts();
+        setTimeout(() => { const chatsTab = document.querySelector('.nav-item[data-tab="chats"]'); if (chatsTab) chatsTab.click(); setTimeout(() => openConv(conv.id), 150); }, 600);
+    });
+}
 function renderProfileGifts() {
     const container = document.getElementById('profileGifts');
     if (!container) return;
-    document.getElementById('statGifts').textContent = state.userProfileGifts.length;
-    document.getElementById('profileBalance').textContent = state.balance;
+    const sg = document.getElementById('statGifts'); if (sg) sg.textContent = state.userProfileGifts.length;
+    const pb = document.getElementById('profileBalance'); if (pb) pb.textContent = state.balance;
     if (!state.userProfileGifts.length) {
         container.innerHTML = '<div style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 20px; grid-column: 1/-1;">Пока нет подарков</div>';
         return;
@@ -1869,6 +2105,7 @@ function renderProfileGifts() {
 /* ============ MULTI ACCOUNTS ============ */
 function renderSavedAccounts() {
     const container = document.getElementById('savedAccounts');
+    if (!container) return;
     const accounts = JSON.parse(localStorage.getItem('lunar_multi_accounts') || '[]');
     if (!accounts.length) { container.innerHTML = ''; return; }
     container.innerHTML = accounts.map(login => {
@@ -1885,8 +2122,8 @@ function renderSavedAccounts() {
             e.stopPropagation();
             return;
         }
-        document.getElementById('loginUsername').value = row.dataset.login;
-        document.getElementById('loginPassword').focus();
+        const lu = document.getElementById('loginUsername'); if (lu) lu.value = row.dataset.login;
+        const lp = document.getElementById('loginPassword'); if (lp) lp.focus();
     }));
 }
 renderSavedAccounts();
@@ -1895,8 +2132,8 @@ renderSavedAccounts();
 setInterval(() => {
     if (!state.user) return;
     checkAutoLock();
-    const online = Math.max(1, state.convs.filter(c => c.type === 'group').length + 1);
-    document.getElementById('onlineCount').textContent = online;
+    const oc = document.getElementById('onlineCount');
+    if (oc) oc.textContent = Math.max(1, state.convs.filter(c => c.type === 'group').length + 1);
 }, 5000);
 
 /* ============ EXPIRING MESSAGES ============ */
