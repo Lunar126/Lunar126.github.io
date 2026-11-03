@@ -379,8 +379,11 @@ function enterApp() {
     document.getElementById('app').classList.add('visible');
     renderConvList();
     applyEmojiToStatic();
-    renderGifts();
-    renderProfileGifts();
+    
+    // Безопасный вызов функций, которые могут зависеть от HTML-элементов
+    if (document.getElementById('giftsGrid')) renderGifts();
+    if (document.getElementById('profileGifts')) renderProfileGifts();
+    
     document.getElementById('onlineCount').textContent = Math.max(1, state.convs.filter(c => c.type === 'group').length + 1);
     saveToStorage();
     if (state.pin) lockApp();
